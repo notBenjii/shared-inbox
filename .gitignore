@@ -1,0 +1,12 @@
+# PyCharm / IDE settings
+.idea/
+
+# Python cache & bytecode
+__pycache__/
+*.pyc
+
+# Environment variables
+backend/.env
+
+# Database
+backend/inbox.db
