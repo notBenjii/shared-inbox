@@ -29,7 +29,7 @@ def require_token(authorization: str = Header(default=None)):
 
 def get_connection():
     conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # lets us access columns by name, e.g. row["content"]
+    conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
@@ -51,7 +51,7 @@ init_db()
 def health_check():
     return {"status": "ok"}
 
-@app.post("/items", dependencies=[Depends(require_token)])
+@app.post("/items", status_code=201, dependencies=[Depends(require_token)])
 def create_item(new_item: NewItem):
     created_at = datetime.now(timezone.utc).isoformat()
     conn = get_connection()
