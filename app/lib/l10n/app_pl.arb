@@ -1,0 +1,43 @@
+{
+  "@@locale": "pl",
+  "syncing": "synchronizowanie...",
+  "notSyncedYet": "jeszcze nie zsynchronizowano",
+  "lastSynced": "ostatnia synchronizacja: {time}",
+  "@lastSynced": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sendHint": "Wklej lub wpisz coś...",
+  "emptyStateMessage": "Brak elementów.\nWyślij coś poniżej, aby zacząć.",
+  "renameDeviceTitle": "Zmień nazwę urządzenia",
+  "renameDeviceHint": "Nowa nazwa urządzenia",
+  "cancel": "Anuluj",
+  "save": "Zapisz",
+  "resetSetup": "Zresetuj konfigurację",
+  "failedToLoad": "Nie udało się wczytać elementów. Sprawdź połączenie.",
+  "failedToSend": "Nie udało się wysłać elementu. Sprawdź połączenie.",
+  "noUrlError": "Adres URL serwera jest wymagany.",
+  "noTokenError": "Token jest wymagany.",
+  "noHttpError": "Musi zaczynać się od http:// lub https://",
+  "welcomeMessage": "Połącz się z serwerem, aby zacząć.",
+  "connect": "Połącz",
+  "credentialsInfo": "Twoje dane logowania są przechowywane lokalnie i nigdy nie są udostępniane.",
+  "serverUrl": "ADRES URL SERWERA",
+  "token": "TOKEN",
+  "resetSetupSuccess": "Konfiguracja została pomyślnie zresetowana.",
+  "defaultDeviceName": "Moje urządzenie",
+  "justNow": "teraz",
+  "minutesAgo": "{count}m temu",
+  "@minutesAgo": {
+    "placeholders": { "count": {} }
+  },
+  "hoursAgo": "{count}h temu",
+  "@hoursAgo": {
+    "placeholders": { "count": {} }
+  },
+  "yesterday": "Wczoraj",
+  "emptyDeviceNameError": "Nazwa urządzenia nie może być pusta.",
+  "chooseLanguage": "Wybierz język",
+  "systemDefault": "Domyślny systemowy"
+}

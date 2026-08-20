@@ -11,8 +11,14 @@ class StorageService {
   Future<String?> getServerUrl() => _storage.read(key: 'server_url');
   Future<String?> getToken() => _storage.read(key: 'token');
 
-  Future<void> saveDeviceName(String deviceName) => _storage.write(key: 'device_name', value: deviceName);
+  Future<void> saveDeviceName(String deviceName) =>
+      _storage.write(key: 'device_name', value: deviceName);
   Future<String?> getDeviceName() => _storage.read(key: 'device_name');
+
+  Future<void> saveLanguage(String? languageCode) => languageCode == null
+      ? _storage.delete(key: 'language')
+      : _storage.write(key: 'language', value: languageCode);
+  Future<String?> getLanguage() => _storage.read(key: 'language');
 
   Future<void> clearAll() => _storage.deleteAll();
 }
