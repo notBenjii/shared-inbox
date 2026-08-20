@@ -1,23 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'dart:async';
+
+import 'l10n/app_localizations.dart';
+
+import 'utils/time_formatter.dart';
+import 'services/api_service.dart';
 import 'storage_service.dart';
 import 'setup_screen.dart';
-
-import 'dart:convert';
-import 'dart:async';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale? _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocale();
+  }
+
+  Future<void> _loadLocale() async {
+    final saved = await StorageService().getLanguage();
+    if (saved != null) {
+      setState(() {
+        _locale = Locale(saved);
+      });
+    }
+  }
+
+  void _changeLocale(Locale? locale) async {
+    setState(() {
+      _locale = locale;
+    });
+    await StorageService().saveLanguage(locale?.languageCode);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shared Inbox',
+      title: 'ClipSync',
+      locale: _locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en'), Locale('pl')],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 32, 27, 52),
@@ -32,9 +72,9 @@ class MyApp extends StatelessWidget {
             );
           }
           if (snapshot.data == null) {
-            return const SetupScreen();
+            return SetupScreen(onLocaleChange: _changeLocale);
           }
-          return const MyHomePage(title: 'Shared Inbox');
+          return MyHomePage(title: 'ClipSync', onLocaleChange: _changeLocale);
         },
       ),
     );
@@ -42,9 +82,14 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({
+    super.key,
+    required this.title,
+    required this.onLocaleChange,
+  });
 
   final String title;
+  final void Function(Locale?) onLocaleChange;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -58,17 +103,17 @@ class _MyHomePageState extends State<MyHomePage> {
   final _textController = TextEditingController();
   final List<Map<String, String>> _items = [];
   Timer? _refreshTimer;
+  ApiService? _apiService;
+  DateTime? _lastSynced;
+  bool _isLoading = false;
 
   Future<void> _fetchItems() async {
-    final response = await http.get(
-      Uri.parse('$_serverUrl/items'),
-      headers: {
-        'Authorization': 'Bearer $_token',
-        'Content-Type': 'application/json',
-      },
-    );
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
+    final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final data = await _apiService!.fetchItems();
       setState(() {
         _items.clear();
         _items.addAll(
@@ -80,68 +125,40 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
         );
+        _lastSynced = DateTime.now().toUtc();
       });
-    } else {
-      // TODO: Handle error
-      print('Failed to load items');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.failedToLoad)));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   Future<void> _sendItem() async {
+    final l10n = AppLocalizations.of(context)!;
     final input = _textController.text;
-    if (input.isEmpty) {
-      return;
-    }
-    _textController.clear();
+    if (input.isEmpty) return;
 
     setState(() {
       _isSending = true;
     });
 
     try {
-      final response = await http.post(
-        Uri.parse('$_serverUrl/items'),
-        headers: {
-          'Authorization': 'Bearer $_token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({'content': input, 'device_name': _deviceName}),
-      );
-      if (response.statusCode == 201) {
-        await _fetchItems();
-      } else {
-        print('Failed to send item');
-      }
+      await _apiService!.sendItem(input, _deviceName ?? l10n.defaultDeviceName);
+      _textController.clear();
+      await _fetchItems();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.failedToSend)));
     } finally {
       setState(() {
         _isSending = false;
       });
-    }
-  }
-
-  String _formatTimestamp(String isoString) {
-    final itemDate = DateTime.parse(isoString);
-    final now = DateTime.now().toUtc();
-
-    // Normalize both to midnight, so we're comparing calendar days, not elapsed hours
-    final today = DateTime(now.year, now.month, now.day);
-    final itemDay = DateTime(itemDate.year, itemDate.month, itemDate.day);
-    final dayDifference = today.difference(itemDay).inDays;
-
-    if (dayDifference == 0) {
-      // Same calendar day — use minute/hour logic
-      final elapsed = now.difference(itemDate);
-      if (elapsed.inMinutes < 1) {
-        return 'just now';
-      } else if (elapsed.inMinutes < 60) {
-        return '${elapsed.inMinutes}m ago';
-      } else {
-        return '${elapsed.inHours}h ago';
-      }
-    } else if (dayDifference == 1) {
-      return 'Yesterday';
-    } else {
-      return '${itemDate.day}/${itemDate.month}/${itemDate.year}';
     }
   }
 
@@ -156,16 +173,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _loadCredentials() async {
-    final serverUrl = await StorageService().getServerUrl();
-    final token = await StorageService().getToken();
-    final deviceName = await StorageService().getDeviceName();
+    final storageService = StorageService();
+    final serverUrl = await storageService.getServerUrl();
+    final token = await storageService.getToken();
+    final deviceName = await storageService.getDeviceName();
 
     setState(() {
       _serverUrl = serverUrl;
       _token = token;
-      _deviceName = deviceName ?? 'Device Name';
+      _deviceName = deviceName;
     });
 
+    _apiService = ApiService(serverUrl: _serverUrl!, token: _token!);
     await _fetchItems();
   }
 
@@ -180,6 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 32, 27, 52),
@@ -197,7 +217,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Text(
-                  'Last synced: 10 minutes ago',
+                  _isLoading
+                      ? l10n.syncing
+                      : (_lastSynced != null
+                            ? l10n.lastSynced(
+                                formatTimestamp(context, _lastSynced!),
+                              )
+                            : l10n.notSyncedYet),
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 150),
                     fontSize: 12,
@@ -211,60 +237,112 @@ class _MyHomePageState extends State<MyHomePage> {
                   final renameController = TextEditingController(
                     text: _deviceName,
                   );
+                  String? renameError; // moved outside the builder
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Rename device'),
-                      content: TextField(
-                        controller: renameController,
-                        decoration: const InputDecoration(
-                          hintText: 'New device name',
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
+                    builder: (context) => StatefulBuilder(
+                      builder: (context, setDialogState) {
+                        return AlertDialog(
+                          title: Text(l10n.renameDeviceTitle),
+                          content: TextField(
+                            controller: renameController,
+                            decoration: InputDecoration(
+                              hintText: l10n.renameDeviceHint,
+                              errorText: renameError,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(l10n.cancel),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                final newName = renameController.text.trim();
+                                if (newName.isEmpty) {
+                                  setDialogState(() {
+                                    renameError = l10n.emptyDeviceNameError;
+                                  });
+                                  return;
+                                }
+                                setState(() {
+                                  _deviceName = newName;
+                                });
+                                StorageService().saveDeviceName(newName);
+                                Navigator.pop(context);
+                              },
+                              child: Text(l10n.save),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  );
+                } else if (value == 'language') {
+                  showDialog(
+                    context: context,
+                    builder: (context) => SimpleDialog(
+                      title: Text(l10n.chooseLanguage),
+                      children: [
+                        SimpleDialogOption(
                           onPressed: () {
-                            setState(() {
-                              _deviceName = renameController.text;
-                            });
-                            StorageService().saveDeviceName(
-                              renameController.text,
-                            );
+                            widget.onLocaleChange(null);
                             Navigator.pop(context);
                           },
-                          child: const Text('Save'),
+                          child: Text(l10n.systemDefault),
+                        ),
+                        SimpleDialogOption(
+                          onPressed: () {
+                            widget.onLocaleChange(const Locale('en'));
+                            Navigator.pop(context);
+                          },
+                          child: const Text('English'),
+                        ),
+                        SimpleDialogOption(
+                          onPressed: () {
+                            widget.onLocaleChange(const Locale('pl'));
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Polski'),
                         ),
                       ],
                     ),
                   );
                 } else if (value == 'reset') {
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final message = l10n.resetSetupSuccess;
+
                   await StorageService().clearAll();
+
                   if (!mounted) return;
-                  Navigator.pushAndRemoveUntil(
-                    context,
+
+                  messenger.showSnackBar(SnackBar(content: Text(message)));
+                  navigator.pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (context) => const SetupScreen(),
+                      builder: (context) =>
+                          SetupScreen(onLocaleChange: widget.onLocaleChange),
                     ),
                     (route) => false,
                   );
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'rename',
-                  child: Text('Rename device'),
+                  child: Text(l10n.renameDeviceTitle),
                 ),
-                const PopupMenuItem(value: 'reset', child: Text('Reset setup')),
+                PopupMenuItem(
+                  value: 'language',
+                  child: Text(l10n.chooseLanguage),
+                ),
+                PopupMenuItem(value: 'reset', child: Text(l10n.resetSetup)),
               ],
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _deviceName ?? 'Device Name',
+                    _deviceName ?? l10n.defaultDeviceName,
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -285,70 +363,86 @@ class _MyHomePageState extends State<MyHomePage> {
               onRefresh: () async {
                 await _fetchItems();
               },
-              child: ListView.builder(
-                itemCount: _items.length,
-                itemBuilder: (context, index) {
-                  final item = _items[index];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: Border(
-                        left: BorderSide(
-                          color: _colorForDevice(item['device_name'] ?? ''),
-                          width: 4.0,
-                        ),
+              child: _isLoading && _items.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : _items.isEmpty
+                  ? Center(
+                      child: Text(
+                        l10n.emptyStateMessage,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4.0,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              item['device_name'] ?? '',
-                              style: TextStyle(
+                    )
+                  : ListView.builder(
+                      itemCount: _items.length,
+                      itemBuilder: (context, index) {
+                        final item = _items[index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[800],
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border(
+                              left: BorderSide(
                                 color: _colorForDevice(
                                   item['device_name'] ?? '',
                                 ),
-                                fontSize: 12.0,
+                                width: 4.0,
                               ),
                             ),
-                            Text(
-                              _formatTimestamp(item['created_at'] ?? ''),
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12.0,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 4.0,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          item['content'] ?? '',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
+                            ],
                           ),
-                        ),
-                      ],
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    item['device_name'] ?? '',
+                                    style: TextStyle(
+                                      color: _colorForDevice(
+                                        item['device_name'] ?? '',
+                                      ),
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                  Text(
+                                    formatTimestamp(
+                                      context,
+                                      DateTime.parse(item['created_at']!),
+                                    ),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8.0),
+                              Text(
+                                item['content'] ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
           Padding(
@@ -358,7 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Paste or type something...',
+                      hintText: l10n.sendHint,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),

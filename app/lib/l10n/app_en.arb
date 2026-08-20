@@ -1,0 +1,43 @@
+{
+  "@@locale": "en",
+  "syncing": "syncing...",
+  "notSyncedYet": "not synced yet",
+  "lastSynced": "last synced: {time}",
+  "@lastSynced": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sendHint": "Paste or type something...",
+  "emptyStateMessage": "Nothing synced yet.\nSend something below to get started.",
+  "renameDeviceTitle": "Rename device",
+  "renameDeviceHint": "New device name",
+  "cancel": "Cancel",
+  "save": "Save",
+  "resetSetup": "Reset setup",
+  "failedToLoad": "Failed to load items. Check your connection.",
+  "failedToSend": "Failed to send item. Check your connection.",
+  "noUrlError": "Server URL is required.",
+  "noTokenError": "Token is required.",
+  "noHttpError": "Must start with http:// or https://",
+  "welcomeMessage": "Connect to your sync server to get started.",
+  "connect": "Connect",
+  "credentialsInfo": "Your credentials are stored locally and never shared.",
+  "serverUrl": "SERVER URL",
+  "token": "TOKEN",
+  "resetSetupSuccess": "Setup reset successfully.",
+  "defaultDeviceName": "My Device",
+  "justNow": "just now",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": { "count": {} }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": { "count": {} }
+  },
+  "yesterday": "Yesterday",
+  "emptyDeviceNameError": "Device name cannot be empty.",
+  "chooseLanguage": "Choose language",
+  "systemDefault": "System default"
+}
