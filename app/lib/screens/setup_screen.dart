@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'storage_service.dart';
-import 'main.dart';
-import 'l10n/app_localizations.dart';
+import '../l10n/app_localizations.dart';
+import '../services/storage_service.dart';
+import '../theme/app_theme.dart';
+import 'home_screen.dart';
 
 import 'dart:io';
 
@@ -67,7 +68,7 @@ class _SetupScreenState extends State<SetupScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => MyHomePage(
+        builder: (context) => HomeScreen(
           title: 'ClipSync',
           onLocaleChange: widget.onLocaleChange,
         ),
@@ -76,10 +77,11 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   String _defaultDeviceName() {
+    final l10n = AppLocalizations.of(context)!;
     String platformName = Platform.operatingSystem;
     String capitalized =
         platformName[0].toUpperCase() + platformName.substring(1);
-    return '$capitalized Device';
+    return l10n.defaultDeviceNamePattern(capitalized);
   }
 
   @override
@@ -93,19 +95,18 @@ class _SetupScreenState extends State<SetupScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo
               Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2DD4A7),
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.content_paste, color: Colors.black),
@@ -114,7 +115,7 @@ class _SetupScreenState extends State<SetupScreen> {
               const Text(
                 'ClipSync',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'monospace',
@@ -123,17 +124,18 @@ class _SetupScreenState extends State<SetupScreen> {
               const SizedBox(height: 4),
               Text(
                 l10n.welcomeMessage,
-                style: TextStyle(color: Colors.grey[500], fontSize: 13),
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 32),
-
-              // Form card
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141414),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[850]!),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,18 +144,20 @@ class _SetupScreenState extends State<SetupScreen> {
                     const SizedBox(height: 6),
                     TextField(
                       controller: _serverUrlController,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: AppColors.textPrimary),
                       decoration: InputDecoration(
                         hintText: 'https://sync.example.com',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        prefixIcon: Icon(
+                        hintStyle: const TextStyle(
+                          color: AppColors.textSecondary,
+                        ),
+                        prefixIcon: const Icon(
                           Icons.link,
                           size: 16,
-                          color: Colors.grey[500],
+                          color: AppColors.textSecondary,
                         ),
                         errorText: _urlError,
                         filled: true,
-                        fillColor: const Color(0xFF1A1A1A),
+                        fillColor: AppColors.surfaceVariant,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide.none,
@@ -161,23 +165,24 @@ class _SetupScreenState extends State<SetupScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     _buildLabel(l10n.token),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _tokenController,
                       obscureText: _obscureToken,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textPrimary,
                         fontFamily: 'monospace',
                       ),
                       decoration: InputDecoration(
                         hintText: '••••••••••••••••',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        prefixIcon: Icon(
+                        hintStyle: const TextStyle(
+                          color: AppColors.textSecondary,
+                        ),
+                        prefixIcon: const Icon(
                           Icons.key,
                           size: 16,
-                          color: Colors.grey[500],
+                          color: AppColors.textSecondary,
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -185,17 +190,15 @@ class _SetupScreenState extends State<SetupScreen> {
                                 ? Icons.visibility
                                 : Icons.visibility_off,
                             size: 16,
-                            color: Colors.grey[500],
+                            color: AppColors.textSecondary,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _obscureToken = !_obscureToken;
-                            });
+                            setState(() => _obscureToken = !_obscureToken);
                           },
                         ),
                         errorText: _tokenError,
                         filled: true,
-                        fillColor: const Color(0xFF1A1A1A),
+                        fillColor: AppColors.surfaceVariant,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide.none,
@@ -203,11 +206,10 @@ class _SetupScreenState extends State<SetupScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
                     ElevatedButton(
                       onPressed: _handleConnect,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2DD4A7),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.black,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -219,10 +221,10 @@ class _SetupScreenState extends State<SetupScreen> {
                         children: [
                           Text(
                             l10n.connect,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(width: 6),
-                          Icon(Icons.arrow_forward, size: 16),
+                          const SizedBox(width: 6),
+                          const Icon(Icons.arrow_forward, size: 16),
                         ],
                       ),
                     ),
@@ -233,7 +235,10 @@ class _SetupScreenState extends State<SetupScreen> {
               Text(
                 l10n.credentialsInfo,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600], fontSize: 11),
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 11,
+                ),
               ),
             ],
           ),
@@ -245,8 +250,8 @@ class _SetupScreenState extends State<SetupScreen> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: TextStyle(
-        color: Colors.grey[500],
+      style: const TextStyle(
+        color: AppColors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.2,

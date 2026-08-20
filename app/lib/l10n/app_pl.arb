@@ -26,7 +26,6 @@
   "serverUrl": "ADRES URL SERWERA",
   "token": "TOKEN",
   "resetSetupSuccess": "Konfiguracja została pomyślnie zresetowana.",
-  "defaultDeviceName": "Moje urządzenie",
   "justNow": "teraz",
   "minutesAgo": "{count}m temu",
   "@minutesAgo": {
@@ -39,5 +38,12 @@
   "yesterday": "Wczoraj",
   "emptyDeviceNameError": "Nazwa urządzenia nie może być pusta.",
   "chooseLanguage": "Wybierz język",
-  "systemDefault": "Domyślny systemowy"
+  "systemDefault": "Domyślny systemowy",
+  "defaultDeviceNamePattern": "Urządzenie {platform}",
+  "@defaultDeviceNamePattern": {
+  "placeholders": {
+    "platform": {}
+    }
+  },
+  "defaultDeviceName": "Moje urządzenie"
 }

@@ -77,9 +77,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetSetupSuccess => 'Setup reset successfully.';
 
   @override
-  String get defaultDeviceName => 'My Device';
-
-  @override
   String get justNow => 'just now';
 
   @override
@@ -103,4 +100,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get systemDefault => 'System default';
+
+  @override
+  String defaultDeviceNamePattern(Object platform) {
+    return '$platform Device';
+  }
+
+  @override
+  String get defaultDeviceName => 'My device';
 }

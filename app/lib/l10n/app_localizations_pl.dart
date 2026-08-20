@@ -79,9 +79,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get resetSetupSuccess => 'Konfiguracja została pomyślnie zresetowana.';
 
   @override
-  String get defaultDeviceName => 'Moje urządzenie';
-
-  @override
   String get justNow => 'teraz';
 
   @override
@@ -105,4 +102,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get systemDefault => 'Domyślny systemowy';
+
+  @override
+  String defaultDeviceNamePattern(Object platform) {
+    return 'Urządzenie $platform';
+  }
+
+  @override
+  String get defaultDeviceName => 'Moje urządzenie';
 }

@@ -26,7 +26,6 @@
   "serverUrl": "SERVER URL",
   "token": "TOKEN",
   "resetSetupSuccess": "Setup reset successfully.",
-  "defaultDeviceName": "My Device",
   "justNow": "just now",
   "minutesAgo": "{count}m ago",
   "@minutesAgo": {
@@ -39,5 +38,12 @@
   "yesterday": "Yesterday",
   "emptyDeviceNameError": "Device name cannot be empty.",
   "chooseLanguage": "Choose language",
-  "systemDefault": "System default"
+  "systemDefault": "System default",
+  "defaultDeviceNamePattern": "{platform} Device",
+  "@defaultDeviceNamePattern": {
+  "placeholders": {
+    "platform": {}
+    }
+  },
+  "defaultDeviceName": "My device"
 }

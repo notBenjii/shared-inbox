@@ -224,12 +224,6 @@ abstract class AppLocalizations {
   /// **'Setup reset successfully.'**
   String get resetSetupSuccess;
 
-  /// No description provided for @defaultDeviceName.
-  ///
-  /// In en, this message translates to:
-  /// **'My Device'**
-  String get defaultDeviceName;
-
   /// No description provided for @justNow.
   ///
   /// In en, this message translates to:
@@ -271,6 +265,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'System default'**
   String get systemDefault;
+
+  /// No description provided for @defaultDeviceNamePattern.
+  ///
+  /// In en, this message translates to:
+  /// **'{platform} Device'**
+  String defaultDeviceNamePattern(Object platform);
+
+  /// No description provided for @defaultDeviceName.
+  ///
+  /// In en, this message translates to:
+  /// **'My device'**
+  String get defaultDeviceName;
 }
 
 class _AppLocalizationsDelegate
