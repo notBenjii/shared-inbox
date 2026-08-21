@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+
 import '../l10n/app_localizations.dart';
 
 String formatTimestamp(BuildContext context, DateTime itemDate) {
   final l10n = AppLocalizations.of(context)!;
-  final now = DateTime.now().toUtc();
-  final today = DateTime(now.year, now.month, now.day);
-  final itemDay = DateTime(itemDate.year, itemDate.month, itemDate.day);
+  final nowLocal = DateTime.now();
+  final itemLocal = itemDate.toLocal();
+
+  final today = DateTime(nowLocal.year, nowLocal.month, nowLocal.day);
+  final itemDay = DateTime(itemLocal.year, itemLocal.month, itemLocal.day);
   final dayDifference = today.difference(itemDay).inDays;
 
   if (dayDifference == 0) {
-    final elapsed = now.difference(itemDate);
+    final elapsed = nowLocal.difference(itemLocal);
     if (elapsed.inMinutes < 1) {
       return l10n.justNow;
     } else if (elapsed.inMinutes < 60) {
@@ -20,6 +23,6 @@ String formatTimestamp(BuildContext context, DateTime itemDate) {
   } else if (dayDifference == 1) {
     return l10n.yesterday;
   } else {
-    return '${itemDate.day}/${itemDate.month}/${itemDate.year}';
+    return '${itemLocal.day}/${itemLocal.month}/${itemLocal.year}';
   }
 }

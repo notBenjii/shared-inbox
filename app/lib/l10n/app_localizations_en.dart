@@ -90,7 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get yesterday => 'Yesterday';
+  String get yesterday => 'yesterday';
 
   @override
   String get emptyDeviceNameError => 'Device name cannot be empty.';

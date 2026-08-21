@@ -92,7 +92,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get yesterday => 'Wczoraj';
+  String get yesterday => 'wczoraj';
 
   @override
   String get emptyDeviceNameError => 'Nazwa urządzenia nie może być pusta.';

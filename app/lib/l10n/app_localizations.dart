@@ -245,7 +245,7 @@ abstract class AppLocalizations {
   /// No description provided for @yesterday.
   ///
   /// In en, this message translates to:
-  /// **'Yesterday'**
+  /// **'yesterday'**
   String get yesterday;
 
   /// No description provided for @emptyDeviceNameError.

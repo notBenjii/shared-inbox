@@ -35,7 +35,7 @@
   "@hoursAgo": {
     "placeholders": { "count": {} }
   },
-  "yesterday": "Wczoraj",
+  "yesterday": "wczoraj",
   "emptyDeviceNameError": "Nazwa urządzenia nie może być pusta.",
   "chooseLanguage": "Wybierz język",
   "systemDefault": "Domyślny systemowy",
