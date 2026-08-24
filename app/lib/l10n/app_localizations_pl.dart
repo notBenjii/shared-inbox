@@ -110,4 +110,20 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get defaultDeviceName => 'Moje urządzenie';
+
+  @override
+  String get copiedToClipboard => 'Skopiowano do schowka';
+
+  @override
+  String get deleteConfirmMessage => 'Czy na pewno chcesz usunąć ten element?';
+
+  @override
+  String get deleteConfirmTitle => 'Usuń element';
+
+  @override
+  String get failedToDelete =>
+      'Nie udało się usunąć elementu. Sprawdź połączenie.';
+
+  @override
+  String get delete => 'Usuń';
 }

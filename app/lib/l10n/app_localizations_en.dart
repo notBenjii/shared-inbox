@@ -108,4 +108,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get defaultDeviceName => 'My device';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get deleteConfirmMessage =>
+      'Are you sure you want to delete this item?';
+
+  @override
+  String get deleteConfirmTitle => 'Delete item';
+
+  @override
+  String get failedToDelete => 'Failed to delete item. Check your connection.';
+
+  @override
+  String get delete => 'Delete';
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -34,6 +35,19 @@ class ApiService {
     );
     if (response.statusCode != 201) {
       throw Exception('Failed to send item (status ${response.statusCode})');
+    }
+  }
+
+  Future<void> deleteItem(int id) async {
+    final response = await http.delete(
+      Uri.parse('$serverUrl/items/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete item (status ${response.statusCode})');
     }
   }
 }

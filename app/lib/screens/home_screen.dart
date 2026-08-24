@@ -81,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ..addAll(
             data.map(
               (item) => {
+                'id': item['id'].toString(),
                 'content': item['content'] as String,
                 'device_name': item['device_name'] as String,
                 'created_at': item['created_at'] as String,
@@ -261,8 +262,98 @@ class _HomeScreenState extends State<HomeScreen> {
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         itemCount: _items.length,
-                        itemBuilder: (context, index) =>
-                            InboxCard(item: _items[index]),
+                        itemBuilder: (context, index) {
+                          final item = _items[index];
+                          return Dismissible(
+                            key: Key(item['id']!),
+                            direction: DismissDirection
+                                .endToStart, // swipe right-to-left only
+                            background: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.error,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.white,
+                              ),
+                            ),
+                            confirmDismiss: (direction) async {
+                              return await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      backgroundColor: AppColors.surface,
+                                      title: Text(
+                                        l10n.deleteConfirmTitle,
+                                        style: const TextStyle(
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                      content: Text(
+                                        l10n.deleteConfirmMessage,
+                                        style: const TextStyle(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: Text(
+                                            l10n.cancel,
+                                            style: const TextStyle(
+                                              color: AppColors.textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: Text(
+                                            l10n.delete,
+                                            style: const TextStyle(
+                                              color: AppColors.error,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ) ??
+                                  false;
+                            },
+                            onDismissed: (direction) {
+                              final itemId = item['id']!;
+                              final removedItem = item;
+
+                              setState(() {
+                                _items.removeWhere((i) => i['id'] == itemId);
+                              });
+
+                              _apiService!
+                                  .deleteItem(int.parse(itemId))
+                                  .catchError((e) {
+                                    if (!mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(l10n.failedToDelete),
+                                      ),
+                                    );
+                                    setState(() {
+                                      _items.insert(index, removedItem); // put it back if the delete failed
+                                    });
+                                  });
+                            },
+                            child: InboxCard(item: item),
+                          );
+                        },
                       ),
               ),
             ),

@@ -45,5 +45,10 @@
     "platform": {}
     }
   },
-  "defaultDeviceName": "Moje urządzenie"
+  "defaultDeviceName": "Moje urządzenie",
+  "copiedToClipboard": "Skopiowano do schowka",
+  "deleteConfirmMessage": "Czy na pewno chcesz usunąć ten element?",
+  "deleteConfirmTitle": "Usuń element",
+  "failedToDelete": "Nie udało się usunąć elementu. Sprawdź połączenie.",
+  "delete": "Usuń"
 }

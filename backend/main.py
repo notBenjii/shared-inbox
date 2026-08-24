@@ -81,3 +81,15 @@ def list_items():
     cursor.close()
     conn.close()
     return rows
+
+@app.delete("/items/{item_id}", status_code=204, dependencies=[Depends(require_token)])
+def delete_item(item_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM items WHERE id = %s", (item_id,))
+    conn.commit()
+    deleted_count = cursor.rowcount
+    cursor.close()
+    conn.close()
+    if deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Item not found")

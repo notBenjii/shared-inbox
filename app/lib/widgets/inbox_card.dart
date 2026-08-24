@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import '../utils/time_formatter.dart';
+
+import '../l10n/app_localizations.dart';
 
 class InboxCard extends StatelessWidget {
   const InboxCard({super.key, required this.item});
 
   final Map<String, String> item;
+
+  void _copyToClipboard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final content = item['content'] ?? '';
+    Clipboard.setData(ClipboardData(text: content));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.surface,
+        content: Text(l10n.copiedToClipboard, style: TextStyle(color: AppColors.textPrimary)),
+        duration: Duration(seconds: 1),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +57,33 @@ class InboxCard extends StatelessWidget {
               if (createdAt != null)
                 Text(
                   formatTimestamp(context, DateTime.parse(createdAt)),
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 11),
                 ),
             ],
           ),
           const SizedBox(height: 8),
-          SelectableText(
-            content,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 14.5,
-              height: 1.4,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SelectableText(
+                  content,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14.5,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              InkWell(
+                borderRadius: BorderRadius.circular(6),
+                onTap: () => _copyToClipboard(context),
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(Icons.copy_rounded, size: 16, color: AppColors.textSecondary),
+                ),
+              ),
+            ],
           ),
         ],
       ),
