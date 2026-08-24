@@ -52,5 +52,9 @@
   "failedToDelete": "Failed to delete item. Check your connection.",
   "delete": "Delete",
   "showQrCode": "Show QR code",
-  "failedToGenerateQrCode": "Failed to generate QR code."
+  "failedToGenerateQrCode": "Failed to generate QR code.",
+  "pairYourDevice": "Pair your device",
+  "scanQrInstead": "Scan QR code instead",
+  "failedToRedeemCode": "Failed to redeem pairing code. Check your connection.",
+  "scanQrCode": "Scan QR code"
 }

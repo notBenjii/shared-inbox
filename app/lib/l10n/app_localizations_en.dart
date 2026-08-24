@@ -130,4 +130,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToGenerateQrCode => 'Failed to generate QR code.';
+
+  @override
+  String get pairYourDevice => 'Pair your device';
+
+  @override
+  String get scanQrInstead => 'Scan QR code instead';
+
+  @override
+  String get failedToRedeemCode =>
+      'Failed to redeem pairing code. Check your connection.';
+
+  @override
+  String get scanQrCode => 'Scan QR code';
 }

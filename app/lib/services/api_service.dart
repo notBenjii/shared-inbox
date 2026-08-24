@@ -67,7 +67,10 @@ class ApiService {
   }
 }
 
-Future<Map<String, String>> redeemPairingCode(String serverUrl, String code) async {
+Future<Map<String, String>> redeemPairingCode(
+  String serverUrl,
+  String code,
+) async {
   final response = await http.post(
     Uri.parse('$serverUrl/pairing-codes/$code/redeem'),
   );

@@ -132,4 +132,17 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get failedToGenerateQrCode => 'Nie udało się wygenerować kodu QR.';
+
+  @override
+  String get pairYourDevice => 'Sparuj swoje urządzenie';
+
+  @override
+  String get scanQrInstead => 'Zeskanuj kod QR';
+
+  @override
+  String get failedToRedeemCode =>
+      'Nie udało się zrealizować kodu parowania. Sprawdź połączenie.';
+
+  @override
+  String get scanQrCode => 'Zeskanuj kod QR';
 }

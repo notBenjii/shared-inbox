@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../screens/qr_scan_screen.dart';
 import '../services/storage_service.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
 import 'dart:io';
+import 'dart:convert';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key, required this.onLocaleChange});
@@ -82,6 +85,48 @@ class _SetupScreenState extends State<SetupScreen> {
     String capitalized =
         platformName[0].toUpperCase() + platformName.substring(1);
     return l10n.defaultDeviceNamePattern(capitalized);
+  }
+
+  Future<void> _handleScanQr() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const QrScanScreen()),
+    );
+
+    if (result == null) return; // user backed out without scanning
+
+    try {
+      final decoded = jsonDecode(result) as Map<String, dynamic>;
+      final serverUrl = decoded['serverUrl'] as String;
+      final code = decoded['code'] as String;
+
+      final redeemResult = await redeemPairingCode(serverUrl, code);
+
+      String deviceName = _defaultDeviceName();
+      await _storageService.saveCredentials(
+        redeemResult['server_url']!,
+        redeemResult['token']!,
+      );
+      await _storageService.saveDeviceName(deviceName);
+
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(
+            title: 'ClipSync',
+            onLocaleChange: widget.onLocaleChange,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.failedToRedeemCode),
+        ),
+      );
+    }
   }
 
   @override
@@ -226,6 +271,14 @@ class _SetupScreenState extends State<SetupScreen> {
                           const SizedBox(width: 6),
                           const Icon(Icons.arrow_forward, size: 16),
                         ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: _handleScanQr,
+                      child: Text(
+                        l10n.scanQrInstead,
+                        style: const TextStyle(color: AppColors.textPrimary),
                       ),
                     ),
                   ],

@@ -348,7 +348,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     );
                                     setState(() {
-                                      _items.insert(index, removedItem); // put it back if the delete failed
+                                      _items.insert(
+                                        index,
+                                        removedItem,
+                                      ); // put it back if the delete failed
                                     });
                                   });
                             },

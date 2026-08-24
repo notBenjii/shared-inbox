@@ -122,6 +122,7 @@ class DevicePopupMenu extends StatelessWidget {
     BuildContext context,
     ApiService apiService,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final code = await apiService.createPairingCode();
       final qrData = jsonEncode({
@@ -132,6 +133,10 @@ class DevicePopupMenu extends StatelessWidget {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
+          title: Text(
+            l10n.pairYourDevice,
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
           backgroundColor: AppColors.surface,
           content: SizedBox(
             width: 250,
@@ -141,7 +146,6 @@ class DevicePopupMenu extends StatelessWidget {
         ),
       );
     } catch (e) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.surface,

@@ -52,5 +52,9 @@
   "failedToDelete": "Nie udało się usunąć elementu. Sprawdź połączenie.",
   "delete": "Usuń",
   "showQrCode": "Pokaż kod QR",
-  "failedToGenerateQrCode": "Nie udało się wygenerować kodu QR."
+  "failedToGenerateQrCode": "Nie udało się wygenerować kodu QR.",
+  "pairYourDevice": "Sparuj swoje urządzenie",
+  "scanQrInstead": "Zeskanuj kod QR",
+  "scanQrCode": "Zeskanuj kod QR",
+  "failedToRedeemCode": "Nie udało się zrealizować kodu parowania. Sprawdź połączenie."
 }

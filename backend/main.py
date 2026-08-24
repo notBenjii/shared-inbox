@@ -60,6 +60,18 @@ def init_db():
 
 init_db()
 
+def cleanup_old_pairing_codes():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cutoff = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+    cursor.execute(
+        "DELETE FROM pairing_codes WHERE used = TRUE OR created_at < %s",
+        (cutoff,),
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 @app.get("/")
 def health_check():
     return {"status": "ok"}
@@ -104,6 +116,7 @@ def delete_item(item_id: int):
 
 @app.post("/pairing-codes", dependencies=[Depends(require_token)])
 def create_pairing_code():
+    cleanup_old_pairing_codes()
     code = secrets_module.token_urlsafe(12)
     created_at = datetime.now(timezone.utc).isoformat()
 
@@ -121,6 +134,7 @@ def create_pairing_code():
 
 @app.post("/pairing-codes/{code}/redeem")
 def redeem_pairing_code(code: str):
+    cleanup_old_pairing_codes()
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT created_at, used FROM pairing_codes WHERE code = %s", (code,))

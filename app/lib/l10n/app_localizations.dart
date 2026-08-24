@@ -319,6 +319,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to generate QR code.'**
   String get failedToGenerateQrCode;
+
+  /// No description provided for @pairYourDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair your device'**
+  String get pairYourDevice;
+
+  /// No description provided for @scanQrInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code instead'**
+  String get scanQrInstead;
+
+  /// No description provided for @failedToRedeemCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to redeem pairing code. Check your connection.'**
+  String get failedToRedeemCode;
+
+  /// No description provided for @scanQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get scanQrCode;
 }
 
 class _AppLocalizationsDelegate
