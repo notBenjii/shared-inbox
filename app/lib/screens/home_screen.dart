@@ -224,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onRename: _handleRename,
               onLocaleChange: widget.onLocaleChange,
               onReset: _handleReset,
+              apiService: _apiService,
             ),
           ),
         ],

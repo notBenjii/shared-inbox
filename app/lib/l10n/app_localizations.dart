@@ -307,6 +307,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// No description provided for @showQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Show QR code'**
+  String get showQrCode;
+
+  /// No description provided for @failedToGenerateQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate QR code.'**
+  String get failedToGenerateQrCode;
 }
 
 class _AppLocalizationsDelegate

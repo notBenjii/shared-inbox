@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
+import 'dart:convert';
+
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
+import '../services/api_service.dart';
 
 class DevicePopupMenu extends StatelessWidget {
   const DevicePopupMenu({
@@ -9,12 +14,14 @@ class DevicePopupMenu extends StatelessWidget {
     required this.onRename,
     required this.onLocaleChange,
     required this.onReset,
+    required this.apiService,
   });
 
   final String deviceName;
   final ValueChanged<String> onRename;
   final ValueChanged<Locale?> onLocaleChange;
   final VoidCallback onReset;
+  final ApiService? apiService;
 
   Future<void> _showRenameDialog(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -91,18 +98,60 @@ class DevicePopupMenu extends StatelessWidget {
               onLocaleChange(const Locale('en'));
               Navigator.pop(context);
             },
-            child: const Text('English', style: TextStyle(color: AppColors.textPrimary)),
+            child: const Text(
+              'English',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
           ),
           SimpleDialogOption(
             onPressed: () {
               onLocaleChange(const Locale('pl'));
               Navigator.pop(context);
             },
-            child: const Text('Polski', style: TextStyle(color: AppColors.textPrimary)),
+            child: const Text(
+              'Polski',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showQrDialog(
+    BuildContext context,
+    ApiService apiService,
+  ) async {
+    try {
+      final code = await apiService.createPairingCode();
+      final qrData = jsonEncode({
+        'serverUrl': apiService.serverUrl,
+        'code': code,
+      });
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          content: SizedBox(
+            width: 250,
+            height: 250,
+            child: QrImageView(data: qrData, backgroundColor: Colors.white),
+          ),
+        ),
+      );
+    } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.surface,
+          content: Text(
+            l10n.failedToGenerateQrCode,
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -114,6 +163,8 @@ class DevicePopupMenu extends StatelessWidget {
       onSelected: (value) {
         if (value == 'rename') {
           _showRenameDialog(context);
+        } else if (value == 'qr' && apiService != null) {
+          _showQrDialog(context, apiService!);
         } else if (value == 'language') {
           _showLanguageDialog(context);
         } else if (value == 'reset') {
@@ -123,9 +174,14 @@ class DevicePopupMenu extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(value: 'rename', child: Text(l10n.renameDeviceTitle)),
         PopupMenuItem(value: 'language', child: Text(l10n.chooseLanguage)),
+        if (apiService != null)
+          PopupMenuItem(value: 'qr', child: Text(l10n.showQrCode)),
         PopupMenuItem(
           value: 'reset',
-          child: Text(l10n.resetSetup, style: const TextStyle(color: AppColors.error)),
+          child: Text(
+            l10n.resetSetup,
+            style: const TextStyle(color: AppColors.error),
+          ),
         ),
       ],
       child: Row(
@@ -139,7 +195,11 @@ class DevicePopupMenu extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          const Icon(Icons.expand_more_rounded, color: AppColors.textSecondary, size: 20),
+          const Icon(
+            Icons.expand_more_rounded,
+            color: AppColors.textSecondary,
+            size: 20,
+          ),
         ],
       ),
     );

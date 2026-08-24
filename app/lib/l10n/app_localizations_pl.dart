@@ -126,4 +126,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get delete => 'Usuń';
+
+  @override
+  String get showQrCode => 'Pokaż kod QR';
+
+  @override
+  String get failedToGenerateQrCode => 'Nie udało się wygenerować kodu QR.';
 }

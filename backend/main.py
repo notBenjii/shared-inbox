@@ -1,11 +1,12 @@
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, Header, HTTPException, Depends
 from pydantic import BaseModel
 from dotenv import load_dotenv
+import secrets as secrets_module
 
 load_dotenv()
 
@@ -44,6 +45,13 @@ def init_db():
             content TEXT NOT NULL,
             device_name TEXT NOT NULL,
             created_at TEXT NOT NULL
+        )
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS pairing_codes (
+            code TEXT PRIMARY KEY,
+            created_at TEXT NOT NULL,
+            used BOOLEAN NOT NULL DEFAULT FALSE
         )
     """)
     conn.commit()
@@ -93,3 +101,50 @@ def delete_item(item_id: int):
     conn.close()
     if deleted_count == 0:
         raise HTTPException(status_code=404, detail="Item not found")
+
+@app.post("/pairing-codes", dependencies=[Depends(require_token)])
+def create_pairing_code():
+    code = secrets_module.token_urlsafe(12)
+    created_at = datetime.now(timezone.utc).isoformat()
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO pairing_codes (code, created_at, used) VALUES (%s, %s, FALSE)",
+        (code, created_at),
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"code": code}
+
+@app.post("/pairing-codes/{code}/redeem")
+def redeem_pairing_code(code: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT created_at, used FROM pairing_codes WHERE code = %s", (code,))
+    row = cursor.fetchone()
+
+    if row is None:
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Invalid code")
+
+    if row["used"]:
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=410, detail="Code already used")
+
+    created_at = datetime.fromisoformat(row["created_at"])
+    if datetime.now(timezone.utc) - created_at > timedelta(minutes=2):
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=410, detail="Code expired")
+
+    cursor.execute("UPDATE pairing_codes SET used = TRUE WHERE code = %s", (code,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return {"token": APP_TOKEN, "server_url": "https://shared-inbox.onrender.com"}

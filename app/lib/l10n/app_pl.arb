@@ -50,5 +50,7 @@
   "deleteConfirmMessage": "Czy na pewno chcesz usunąć ten element?",
   "deleteConfirmTitle": "Usuń element",
   "failedToDelete": "Nie udało się usunąć elementu. Sprawdź połączenie.",
-  "delete": "Usuń"
+  "delete": "Usuń",
+  "showQrCode": "Pokaż kod QR",
+  "failedToGenerateQrCode": "Nie udało się wygenerować kodu QR."
 }

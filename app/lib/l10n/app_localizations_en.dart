@@ -124,4 +124,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get showQrCode => 'Show QR code';
+
+  @override
+  String get failedToGenerateQrCode => 'Failed to generate QR code.';
 }

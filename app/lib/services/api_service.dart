@@ -50,4 +50,34 @@ class ApiService {
       throw Exception('Failed to delete item (status ${response.statusCode})');
     }
   }
+
+  Future<String> createPairingCode() async {
+    final response = await http.post(
+      Uri.parse('$serverUrl/pairing-codes'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['code'] as String;
+    } else {
+      throw Exception(
+        'Failed to create pairing code (status ${response.statusCode})',
+      );
+    }
+  }
+}
+
+Future<Map<String, String>> redeemPairingCode(String serverUrl, String code) async {
+  final response = await http.post(
+    Uri.parse('$serverUrl/pairing-codes/$code/redeem'),
+  );
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return {
+      'token': data['token'] as String,
+      'server_url': data['server_url'] as String,
+    };
+  } else {
+    throw Exception('Failed to redeem code (status ${response.statusCode})');
+  }
 }

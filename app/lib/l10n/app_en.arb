@@ -50,5 +50,7 @@
   "deleteConfirmMessage": "Are you sure you want to delete this item?",
   "deleteConfirmTitle": "Delete item",
   "failedToDelete": "Failed to delete item. Check your connection.",
-  "delete": "Delete"
+  "delete": "Delete",
+  "showQrCode": "Show QR code",
+  "failedToGenerateQrCode": "Failed to generate QR code."
 }
