@@ -38,9 +38,9 @@ class ApiService {
     }
   }
 
-  Future<void> deleteItem(int id) async {
+  Future<void> deleteItem(int itemId) async {
     final response = await http.delete(
-      Uri.parse('$serverUrl/items/$id'),
+      Uri.parse('$serverUrl/items/$itemId'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

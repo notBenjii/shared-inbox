@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ..addAll(
             data.map(
               (item) => {
-                'id': item['id'].toString(),
+                'item_id': item['item_id'].toString(),
                 'content': item['content'] as String,
                 'device_name': item['device_name'] as String,
                 'created_at': item['created_at'] as String,
@@ -266,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           final item = _items[index];
                           return Dismissible(
-                            key: Key(item['id']!),
+                            key: Key(item['item_id']!),
                             direction: DismissDirection
                                 .endToStart, // swipe right-to-left only
                             background: Container(
@@ -331,11 +331,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   false;
                             },
                             onDismissed: (direction) {
-                              final itemId = item['id']!;
+                              final itemId = item['item_id']!;
                               final removedItem = item;
 
                               setState(() {
-                                _items.removeWhere((i) => i['id'] == itemId);
+                                _items.removeWhere((i) => i['item_id'] == itemId);
                               });
 
                               _apiService!
