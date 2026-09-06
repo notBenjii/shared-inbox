@@ -110,7 +110,7 @@ def init_db():
 	        account_id SERIAL PRIMARY KEY,
 	        email TEXT NOT NULL UNIQUE,
 	        auth_verifier_hash TEXT NOT NULL,
-	        salt TEXT NOT NULL
+	        salt TEXT NOT NULL,
 	        created_at TEXT NOT NULL
         )
     """)

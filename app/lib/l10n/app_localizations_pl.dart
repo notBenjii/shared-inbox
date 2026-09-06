@@ -182,7 +182,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get verifyEmail => 'Zweryfikuj email';
 
   @override
-  String resendCodeIn(Object seconds) {
+  String resendCodeIn(int seconds) {
     return 'Nie otrzymałeś kodu? Wyślij ponownie za ${seconds}s';
   }
 
@@ -206,5 +206,5 @@ class AppLocalizationsPl extends AppLocalizations {
   String get emailRegisteredError => 'Ten adres email jest już zarejestrowany.';
 
   @override
-  String get genericError => 'Wystąpił błąd. Spróbuj ponownie później.';
+  String get genericError => 'Coś poszło nie tak. Spróbuj ponownie.';
 }

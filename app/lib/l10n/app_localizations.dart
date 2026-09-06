@@ -420,7 +420,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Didn\'t receive it? Resend in {seconds}s'**
-  String resendCodeIn(Object seconds);
+  String resendCodeIn(int seconds);
 
   /// No description provided for @resetPasswordTitle.
   ///
@@ -461,7 +461,7 @@ abstract class AppLocalizations {
   /// No description provided for @genericError.
   ///
   /// In en, this message translates to:
-  /// **'An error occurred. Please try again later.'**
+  /// **'Something went wrong. Please try again.'**
   String get genericError;
 }
 
