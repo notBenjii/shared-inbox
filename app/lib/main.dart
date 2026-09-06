@@ -3,9 +3,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'l10n/app_localizations.dart';
 import 'screens/home_screen.dart';
-import 'screens/setup_screen.dart';
+import 'screens/login_screen.dart';
 import 'services/storage_service.dart';
 import 'theme/app_theme.dart';
+import 'services/auth_service.dart';
+import 'services/api_service.dart';
+import 'const/app_config.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +23,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale? _locale;
+  final _authService = AuthService(AuthApiService(serverUrl: AppConfig.serverUrl));
 
   @override
   void initState() {
@@ -62,9 +66,9 @@ class _MyAppState extends State<MyApp> {
             );
           }
           if (snapshot.data == null) {
-            return SetupScreen(onLocaleChange: _changeLocale);
+            return LoginScreen(authService: _authService, onLocaleChange: _changeLocale);
           }
-          return HomeScreen(title: 'ClipSync', onLocaleChange: _changeLocale);
+          return HomeScreen(title: 'ClipSync', authService: _authService, onLocaleChange: _changeLocale);
         },
       ),
     );

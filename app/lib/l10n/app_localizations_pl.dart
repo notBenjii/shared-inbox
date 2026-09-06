@@ -51,31 +51,6 @@ class AppLocalizationsPl extends AppLocalizations {
       'Nie udało się wysłać elementu. Sprawdź połączenie.';
 
   @override
-  String get noUrlError => 'Adres URL serwera jest wymagany.';
-
-  @override
-  String get noTokenError => 'Token jest wymagany.';
-
-  @override
-  String get noHttpError => 'Musi zaczynać się od http:// lub https://';
-
-  @override
-  String get welcomeMessage => 'Połącz się z serwerem, aby zacząć.';
-
-  @override
-  String get connect => 'Połącz';
-
-  @override
-  String get credentialsInfo =>
-      'Twoje dane logowania są przechowywane lokalnie i nigdy nie są udostępniane.';
-
-  @override
-  String get serverUrl => 'ADRES URL SERWERA';
-
-  @override
-  String get token => 'TOKEN';
-
-  @override
   String get resetSetupSuccess => 'Konfiguracja została pomyślnie zresetowana.';
 
   @override
@@ -145,4 +120,91 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get scanQrCode => 'Zeskanuj kod QR';
+
+  @override
+  String get signInSubtitle => 'Zaloguj się, aby kontynuować';
+
+  @override
+  String get createAccountSubtitle => 'Utwórz swoje konto';
+
+  @override
+  String get emailLabel => 'EMAIL';
+
+  @override
+  String get passwordLabel => 'HASŁO';
+
+  @override
+  String get nicknameLabel => 'NAZWA';
+
+  @override
+  String get nicknameHint => 'twojanazwa';
+
+  @override
+  String get passwordHintCreate => 'Min. 8 znaków';
+
+  @override
+  String get forgotPassword => 'Nie pamiętasz hasła?';
+
+  @override
+  String get signIn => 'Zaloguj się';
+
+  @override
+  String get createAccount => 'Utwórz konto';
+
+  @override
+  String get noAccountPrompt => 'Nie masz konta?';
+
+  @override
+  String get haveAccountPrompt => 'Masz już konto?';
+
+  @override
+  String get createOne => 'Utwórz je';
+
+  @override
+  String get emailRequiredError => 'Email jest wymagany.';
+
+  @override
+  String get passwordRequiredError => 'Hasło jest wymagane.';
+
+  @override
+  String get invalidEmailError => 'Wprowadź poprawny adres email.';
+
+  @override
+  String get passwordTooShortError => 'Hasło musi mieć co najmniej 8 znaków.';
+
+  @override
+  String get verifyEmailTitle => 'Zweryfikuj swój email';
+
+  @override
+  String get verifyEmailSubtitle => 'Wysłaliśmy 6-cyfrowy kod na';
+
+  @override
+  String get verifyEmail => 'Zweryfikuj email';
+
+  @override
+  String resendCodeIn(Object seconds) {
+    return 'Nie otrzymałeś kodu? Wyślij ponownie za ${seconds}s';
+  }
+
+  @override
+  String get resetPasswordTitle => 'Zresetuj hasło';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Wprowadź swój email, a wyślemy link do resetowania hasła';
+
+  @override
+  String get sendResetLink => 'Wyślij link resetujący';
+
+  @override
+  String get backToSignIn => 'Powrót do logowania';
+
+  @override
+  String get back => 'Wstecz';
+
+  @override
+  String get emailRegisteredError => 'Ten adres email jest już zarejestrowany.';
+
+  @override
+  String get genericError => 'Wystąpił błąd. Spróbuj ponownie później.';
 }

@@ -49,31 +49,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToSend => 'Failed to send item. Check your connection.';
 
   @override
-  String get noUrlError => 'Server URL is required.';
-
-  @override
-  String get noTokenError => 'Token is required.';
-
-  @override
-  String get noHttpError => 'Must start with http:// or https://';
-
-  @override
-  String get welcomeMessage => 'Connect to your sync server to get started.';
-
-  @override
-  String get connect => 'Connect';
-
-  @override
-  String get credentialsInfo =>
-      'Your credentials are stored locally and never shared.';
-
-  @override
-  String get serverUrl => 'SERVER URL';
-
-  @override
-  String get token => 'TOKEN';
-
-  @override
   String get resetSetupSuccess => 'Setup reset successfully.';
 
   @override
@@ -143,4 +118,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanQrCode => 'Scan QR code';
+
+  @override
+  String get signInSubtitle => 'Sign in to continue';
+
+  @override
+  String get createAccountSubtitle => 'Create your account';
+
+  @override
+  String get emailLabel => 'EMAIL';
+
+  @override
+  String get passwordLabel => 'PASSWORD';
+
+  @override
+  String get nicknameLabel => 'NICKNAME';
+
+  @override
+  String get nicknameHint => 'yourname';
+
+  @override
+  String get passwordHintCreate => 'Min. 8 characters';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get signIn => 'Sign in';
+
+  @override
+  String get createAccount => 'Create account';
+
+  @override
+  String get noAccountPrompt => 'Don\'t have an account?';
+
+  @override
+  String get haveAccountPrompt => 'Already have an account?';
+
+  @override
+  String get createOne => 'Create one';
+
+  @override
+  String get emailRequiredError => 'Email is required.';
+
+  @override
+  String get passwordRequiredError => 'Password is required.';
+
+  @override
+  String get invalidEmailError => 'Enter a valid email address.';
+
+  @override
+  String get passwordTooShortError => 'Password must be at least 8 characters.';
+
+  @override
+  String get verifyEmailTitle => 'Verify your email';
+
+  @override
+  String get verifyEmailSubtitle => 'We sent a 6-digit code to';
+
+  @override
+  String get verifyEmail => 'Verify email';
+
+  @override
+  String resendCodeIn(Object seconds) {
+    return 'Didn\'t receive it? Resend in ${seconds}s';
+  }
+
+  @override
+  String get resetPasswordTitle => 'Reset password';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Enter your email and we\'ll send you a reset link';
+
+  @override
+  String get sendResetLink => 'Send reset link';
+
+  @override
+  String get backToSignIn => 'Back to sign in';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get emailRegisteredError => 'This email is already registered.';
+
+  @override
+  String get genericError => 'An error occurred. Please try again later.';
 }

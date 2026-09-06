@@ -1,16 +1,17 @@
 import os
 from datetime import datetime, timezone, timedelta
+from typing import Annotated
 
 import psycopg2
+import hashlib
+import hmac
 from argon2.exceptions import VerifyMismatchError
 from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, Header, HTTPException, Depends, Request
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, AfterValidator
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 import secrets as secrets_module
-
-from starlette.middleware.sessions import Session
 
 load_dotenv()
 ph = PasswordHasher()
@@ -18,22 +19,29 @@ _DUMMY_HASH = ph.hash("this-value-is-never-a-real-password")
 _login_attempts: dict[str, dict] = {}
 # structure per IP: {"attempts": int, "blocked_until": datetime, "last_attempt": datetime}
 
+def normalize_email(email: EmailStr) -> str:
+    return str(email).strip().lower()
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL environment variable is not set.")
+
+SALT_DERIVATION_KEY = os.environ.get("SALT_DERIVATION_KEY")
+if not SALT_DERIVATION_KEY:
+    raise RuntimeError("SALT_DERIVATION_KEY environment variable is not set.")
 
 class NewItem(BaseModel):
     content: str
     device_name: str
 
 class Credentials(BaseModel):
-    email: EmailStr
+    email: Annotated[EmailStr, AfterValidator(normalize_email)]
     auth_verifier: str
 
-    @field_validator("email")
-    @classmethod
-    def normalize_email(cls, value: str) -> str:
-        return value.strip().lower()
+class RegisterCredentials(BaseModel):
+    email: Annotated[EmailStr, AfterValidator(normalize_email)]
+    auth_verifier: str
+    salt: str
 
 app = FastAPI()
 
@@ -102,6 +110,7 @@ def init_db():
 	        account_id SERIAL PRIMARY KEY,
 	        email TEXT NOT NULL UNIQUE,
 	        auth_verifier_hash TEXT NOT NULL,
+	        salt TEXT NOT NULL
 	        created_at TEXT NOT NULL
         )
     """)
@@ -220,7 +229,7 @@ def delete_item(item_id: int, session: dict = Depends(require_account)):
         raise HTTPException(status_code=404, detail="Item not found")
 
 @app.post("/accounts", status_code=201)
-def register(creds: Credentials, request: Request):
+def register(creds: RegisterCredentials, request: Request):
     client_ip = request.client.host
     check_rate_limit(client_ip)
     record_attempt(client_ip, multiplier=2)
@@ -230,8 +239,8 @@ def register(creds: Credentials, request: Request):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO accounts (email, auth_verifier_hash, created_at) VALUES (%s, %s, %s) RETURNING account_id",
-                       (creds.email, auth_verifier_hash, created_at),
+        cursor.execute("INSERT INTO accounts (email, auth_verifier_hash, salt, created_at) VALUES (%s, %s, %s, %s) RETURNING account_id",
+                       (creds.email, auth_verifier_hash, creds.salt, created_at),
         )
         result = cursor.fetchone()
         account_id = result["account_id"]  # type: ignore
@@ -293,6 +302,26 @@ def login(creds: Credentials, request: Request):
     token = create_session(account_id)
 
     return {"token": token}
+
+@app.get("/accounts/salt")
+def get_salt(email: EmailStr):
+    normalized_email = normalize_email(email)
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT salt FROM accounts WHERE email = %s", (normalized_email,))
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    fake_salt = hmac.new(
+        SALT_DERIVATION_KEY.encode(), normalized_email.encode(), hashlib.sha256
+    ).hexdigest()
+
+    if row is not None:
+        salt = row["salt"]  # type: ignore
+        return {"salt": salt}
+    else:
+        return {"salt": fake_salt}
 
 @app.post("/pairing-codes")
 def create_pairing_code(session: dict = Depends(require_account)):

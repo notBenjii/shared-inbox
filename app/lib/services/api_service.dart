@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'api_exception.dart';
+
 class ApiService {
   final String serverUrl;
   final String token;
@@ -67,20 +69,77 @@ class ApiService {
   }
 }
 
-Future<Map<String, String>> redeemPairingCode(
-  String serverUrl,
-  String code,
-) async {
-  final response = await http.post(
-    Uri.parse('$serverUrl/pairing-codes/$code/redeem'),
-  );
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return {
-      'token': data['token'] as String,
-      'server_url': data['server_url'] as String,
-    };
-  } else {
-    throw Exception('Failed to redeem code (status ${response.statusCode})');
+class AuthApiService {
+  final String serverUrl;
+
+  AuthApiService({required this.serverUrl});
+
+  Future<String> register(
+    String email,
+    String authVerifier,
+    String salt,
+  ) async {
+    final response = await http.post(
+      Uri.parse('$serverUrl/accounts'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'auth_verifier': authVerifier,
+        'salt': salt,
+      }),
+    );
+    if (response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return data['token'] as String;
+    } else {
+      throw ApiException(response.statusCode, 'Failed to register');
+    }
+  }
+
+  Future<String> login(String email, String authVerifier) async {
+    final response = await http.post(
+      Uri.parse('$serverUrl/sessions'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'auth_verifier': authVerifier}),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['token'] as String;
+    } else {
+      throw Exception('Failed to login (status ${response.statusCode})');
+    }
+  }
+
+  Future<String> fetchSalt(String email) async {
+    final uri = Uri.parse('$serverUrl/accounts/salt')
+        .replace(queryParameters: {'email': email});
+    final response = await http.get(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['salt'] as String;
+    } else {
+      throw Exception('Failed to fetch salt (status ${response.statusCode})');
+    }
+  }
+
+  Future<Map<String, String>> redeemPairingCode(
+    String serverUrl,
+    String code,
+  ) async {
+    final response = await http.post(
+      Uri.parse('$serverUrl/pairing-codes/$code/redeem'),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return {
+        'token': data['token'] as String,
+        'server_url': data['server_url'] as String,
+      };
+    } else {
+      throw Exception('Failed to redeem code (status ${response.statusCode})');
+    }
   }
 }
