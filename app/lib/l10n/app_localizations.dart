@@ -170,54 +170,6 @@ abstract class AppLocalizations {
   /// **'Failed to send item. Check your connection.'**
   String get failedToSend;
 
-  /// No description provided for @noUrlError.
-  ///
-  /// In en, this message translates to:
-  /// **'Server URL is required.'**
-  String get noUrlError;
-
-  /// No description provided for @noTokenError.
-  ///
-  /// In en, this message translates to:
-  /// **'Token is required.'**
-  String get noTokenError;
-
-  /// No description provided for @noHttpError.
-  ///
-  /// In en, this message translates to:
-  /// **'Must start with http:// or https://'**
-  String get noHttpError;
-
-  /// No description provided for @welcomeMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Connect to your sync server to get started.'**
-  String get welcomeMessage;
-
-  /// No description provided for @connect.
-  ///
-  /// In en, this message translates to:
-  /// **'Connect'**
-  String get connect;
-
-  /// No description provided for @credentialsInfo.
-  ///
-  /// In en, this message translates to:
-  /// **'Your credentials are stored locally and never shared.'**
-  String get credentialsInfo;
-
-  /// No description provided for @serverUrl.
-  ///
-  /// In en, this message translates to:
-  /// **'SERVER URL'**
-  String get serverUrl;
-
-  /// No description provided for @token.
-  ///
-  /// In en, this message translates to:
-  /// **'TOKEN'**
-  String get token;
-
   /// No description provided for @resetSetupSuccess.
   ///
   /// In en, this message translates to:
@@ -343,6 +295,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan QR code'**
   String get scanQrCode;
+
+  /// No description provided for @signInSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue'**
+  String get signInSubtitle;
+
+  /// No description provided for @createAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get createAccountSubtitle;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EMAIL'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PASSWORD'**
+  String get passwordLabel;
+
+  /// No description provided for @nicknameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NICKNAME'**
+  String get nicknameLabel;
+
+  /// No description provided for @nicknameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'yourname'**
+  String get nicknameHint;
+
+  /// No description provided for @passwordHintCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Min. 8 characters'**
+  String get passwordHintCreate;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get signIn;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAccount;
+
+  /// No description provided for @noAccountPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get noAccountPrompt;
+
+  /// No description provided for @haveAccountPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get haveAccountPrompt;
+
+  /// No description provided for @createOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one'**
+  String get createOne;
+
+  /// No description provided for @emailRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required.'**
+  String get emailRequiredError;
+
+  /// No description provided for @passwordRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required.'**
+  String get passwordRequiredError;
+
+  /// No description provided for @invalidEmailError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get invalidEmailError;
+
+  /// No description provided for @passwordTooShortError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters.'**
+  String get passwordTooShortError;
+
+  /// No description provided for @verifyEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your email'**
+  String get verifyEmailTitle;
+
+  /// No description provided for @verifyEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit code to'**
+  String get verifyEmailSubtitle;
+
+  /// No description provided for @verifyEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify email'**
+  String get verifyEmail;
+
+  /// No description provided for @resendCodeIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive it? Resend in {seconds}s'**
+  String resendCodeIn(Object seconds);
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email and we\'ll send you a reset link'**
+  String get resetPasswordSubtitle;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send reset link'**
+  String get sendResetLink;
+
+  /// No description provided for @backToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get backToSignIn;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @emailRegisteredError.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered.'**
+  String get emailRegisteredError;
+
+  /// No description provided for @genericError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred. Please try again later.'**
+  String get genericError;
 }
 
 class _AppLocalizationsDelegate

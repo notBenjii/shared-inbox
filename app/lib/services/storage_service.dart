@@ -3,13 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class StorageService {
   final _storage = const FlutterSecureStorage();
 
-  Future<void> saveCredentials(String serverUrl, String token) async {
-    await _storage.write(key: 'server_url', value: serverUrl);
-    await _storage.write(key: 'token', value: token);
-  }
-
-  Future<String?> getServerUrl() => _storage.read(key: 'server_url');
+  Future<void> saveToken(String token) =>
+      _storage.write(key: 'token', value: token);
   Future<String?> getToken() => _storage.read(key: 'token');
+
+    Future<void> saveEmail(String email) =>
+      _storage.write(key: 'email', value: email);
+  Future<String?> getEmail() => _storage.read(key: 'email');
 
   Future<void> saveDeviceName(String deviceName) =>
       _storage.write(key: 'device_name', value: deviceName);

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
 import '../theme/app_theme.dart';
@@ -10,16 +11,19 @@ import '../utils/time_formatter.dart';
 import '../widgets/device_popup_menu.dart';
 import '../widgets/inbox_card.dart';
 import '../widgets/message_input.dart';
-import 'setup_screen.dart';
+import '../const/app_config.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     required this.title,
+    required this.authService,
     required this.onLocaleChange,
   });
 
   final String title;
+  final AuthService authService;
   final void Function(Locale?) onLocaleChange;
 
   @override
@@ -27,9 +31,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String? _serverUrl;
   String? _token;
   String? _deviceName;
+  final String _serverUrl = AppConfig.serverUrl;
   bool _isSending = false;
   bool _isLoading = false;
   DateTime? _lastSynced;
@@ -56,17 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadCredentials() async {
     final storageService = StorageService();
-    final serverUrl = await storageService.getServerUrl();
     final token = await storageService.getToken();
     final deviceName = await storageService.getDeviceName();
 
     setState(() {
-      _serverUrl = serverUrl;
       _token = token;
       _deviceName = deviceName;
     });
 
-    _apiService = ApiService(serverUrl: _serverUrl!, token: _token!);
+    _apiService = ApiService(serverUrl: _serverUrl, token: _token!);
     await _fetchItems();
   }
 
@@ -81,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ..addAll(
             data.map(
               (item) => {
-                'id': item['id'].toString(),
+                'item_id': item['item_id'].toString(),
                 'content': item['content'] as String,
                 'device_name': item['device_name'] as String,
                 'created_at': item['created_at'] as String,
@@ -148,8 +150,10 @@ class _HomeScreenState extends State<HomeScreen> {
     messenger.showSnackBar(SnackBar(content: Text(l10n.resetSetupSuccess)));
     navigator.pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (context) =>
-            SetupScreen(onLocaleChange: widget.onLocaleChange),
+        builder: (context) => LoginScreen(
+          authService: widget.authService,
+          onLocaleChange: widget.onLocaleChange,
+        ),
       ),
       (route) => false,
     );
@@ -266,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           final item = _items[index];
                           return Dismissible(
-                            key: Key(item['id']!),
+                            key: Key(item['item_id']!),
                             direction: DismissDirection
                                 .endToStart, // swipe right-to-left only
                             background: Container(
@@ -331,11 +335,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   false;
                             },
                             onDismissed: (direction) {
-                              final itemId = item['id']!;
+                              final itemId = item['item_id']!;
                               final removedItem = item;
 
                               setState(() {
-                                _items.removeWhere((i) => i['id'] == itemId);
+                                _items.removeWhere(
+                                  (i) => i['item_id'] == itemId,
+                                );
                               });
 
                               _apiService!
