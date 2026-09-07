@@ -42,10 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
     bool ok = true;
 
     setState(() {
-      if (email.isEmpty) {
-        _emailError = l10n.emailRequiredError;
-        ok = false;
-      } else if (!email.contains('@')) {
+      final emailRegex = RegExp(r'^[\w\.\-\+]+@[\w\-]+\.[a-zA-Z]{2,}$');
+      if (!emailRegex.hasMatch(email)) {
         _emailError = l10n.invalidEmailError;
         ok = false;
       } else {
@@ -87,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
       await _storageService.saveDeviceName(deviceName);
-      
+
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -101,15 +99,25 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } on ApiException catch (e) {
       if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppColors.surface,
-            content: Text(
-              l10n.genericError,
-              style: const TextStyle(color: AppColors.textPrimary),
-            ),
+      String message;
+      if (e.statusCode == 404) {
+        message = l10n.invalidCredentialsError;
+      } else if (e.statusCode == 429) {
+        message = e.retryAfterSeconds != null
+            ? l10n.rateLimitedWithTime(e.retryAfterSeconds!)
+            : l10n.rateLimitedGeneric;
+      } else {
+        message = l10n.genericError;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.surface,
+          content: Text(
+            message,
+            style: const TextStyle(color: AppColors.textPrimary),
           ),
-        );
+        ),
+      );
     }
 
     setState(() => _isSubmitting = false);

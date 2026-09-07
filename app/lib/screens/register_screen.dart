@@ -4,8 +4,11 @@ import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
 import '../services/api_exception.dart';
+import '../services/storage_service.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
+
+import 'dart:io';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({
@@ -28,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nicknameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _storageService = StorageService();
 
   bool _obscurePassword = true;
   bool _isSubmitting = false;
@@ -41,10 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool ok = true;
 
     setState(() {
-      if (email.isEmpty) {
-        _emailError = l10n.emailRequiredError;
-        ok = false;
-      } else if (!email.contains('@')) {
+      final emailRegex = RegExp(r'^[\w\.\-\+]+@[\w\-]+\.[a-zA-Z]{2,}$');
+      if (!emailRegex.hasMatch(email)) {
         _emailError = l10n.invalidEmailError;
         ok = false;
       } else {
@@ -65,6 +67,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return ok;
   }
 
+  String _defaultDeviceName() {
+    final l10n = AppLocalizations.of(context)!;
+    String platformName = Platform.operatingSystem;
+    String capitalized =
+        platformName[0].toUpperCase() + platformName.substring(1);
+    return l10n.defaultDeviceNamePattern(capitalized);
+  }
+
   Future<void> _handleCreateAccount() async {
     if (!_validate()) return;
 
@@ -73,11 +83,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isSubmitting = true);
 
+    String deviceName = _defaultDeviceName();
+
     try {
       await widget.authService.register(
         _emailController.text.trim(),
         _passwordController.text,
       );
+      await _storageService.saveDeviceName(deviceName);
       if (!mounted) return;
       Navigator.pushReplacement(
         context,

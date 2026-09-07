@@ -74,11 +74,17 @@ def check_rate_limit(client_ip: str):
     now = datetime.now(timezone.utc)
 
     if entry["blocked_until"] is not None and now < entry["blocked_until"]:
-        raise HTTPException(status_code=429, detail="Too many attempts. Try again later.")
+        retry_after = int((entry["blocked_until"] - now).total_seconds()) + 1
+        raise HTTPException(
+            status_code=429,
+            detail="Too many attempts. Try again later.",
+            headers={"Retry-After": str(retry_after)},
+        )
 
 BASE_DELAY_SECONDS = 1
 MAX_DELAY_SECONDS = 300  # rate limiting cap
 RESET_AFTER_SECONDS = 600  # 10 minutes of no attempts = back to zero
+FREE_ATTEMPTS = 4 # first N failures cost nothing
 
 def record_attempt(client_ip: str, multiplier: int = 1):
     now = datetime.now(timezone.utc)
@@ -90,7 +96,13 @@ def record_attempt(client_ip: str, multiplier: int = 1):
     else:
         attempts = entry["attempts"] + 1
 
-    delay = min(BASE_DELAY_SECONDS * (2 ** (attempts - 1)) * multiplier, MAX_DELAY_SECONDS)
+    if attempts <= FREE_ATTEMPTS:
+        delay = 0
+    else:
+        delay = min(
+            BASE_DELAY_SECONDS * (2 ** (attempts - FREE_ATTEMPTS - 1)) * multiplier,
+            MAX_DELAY_SECONDS,
+        )
 
     _login_attempts[client_ip] = {
         "attempts": attempts,
@@ -322,6 +334,19 @@ def get_salt(email: EmailStr):
         return {"salt": salt}
     else:
         return {"salt": fake_salt}
+
+@app.post("/logout", status_code=204)
+def logout(authorization: str = Header(default=None)):
+    if authorization is None or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing bearer token")
+    token = authorization.removeprefix("Bearer ").strip()
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM sessions WHERE token = %s", (token,))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 @app.post("/pairing-codes")
 def create_pairing_code(session: dict = Depends(require_account)):

@@ -13,14 +13,14 @@ class DevicePopupMenu extends StatelessWidget {
     required this.deviceName,
     required this.onRename,
     required this.onLocaleChange,
-    required this.onReset,
+    required this.onLogout,
     required this.apiService,
   });
 
   final String deviceName;
   final ValueChanged<String> onRename;
   final ValueChanged<Locale?> onLocaleChange;
-  final VoidCallback onReset;
+  final VoidCallback onLogout;
   final ApiService? apiService;
 
   Future<void> _showRenameDialog(BuildContext context) async {
@@ -171,8 +171,8 @@ class DevicePopupMenu extends StatelessWidget {
           _showQrDialog(context, apiService!);
         } else if (value == 'language') {
           _showLanguageDialog(context);
-        } else if (value == 'reset') {
-          onReset();
+        } else if (value == 'logout') {
+          onLogout();
         }
       },
       itemBuilder: (context) => [
@@ -181,9 +181,9 @@ class DevicePopupMenu extends StatelessWidget {
         if (apiService != null)
           PopupMenuItem(value: 'qr', child: Text(l10n.showQrCode)),
         PopupMenuItem(
-          value: 'reset',
+          value: 'logout',
           child: Text(
-            l10n.resetSetup,
+            l10n.logout,
             style: const TextStyle(color: AppColors.error),
           ),
         ),

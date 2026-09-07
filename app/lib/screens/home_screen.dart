@@ -139,15 +139,24 @@ class _HomeScreenState extends State<HomeScreen> {
     StorageService().saveDeviceName(newName);
   }
 
-  Future<void> _handleReset() async {
+  Future<void> _handleLogout() async {
     final l10n = AppLocalizations.of(context)!;
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
+    await _apiService!.logout();
     await StorageService().clearAll();
     if (!mounted) return;
 
-    messenger.showSnackBar(SnackBar(content: Text(l10n.resetSetupSuccess)));
+    messenger.showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.surface,
+        content: Text(
+          l10n.logoutSuccess,
+          style: const TextStyle(color: AppColors.textPrimary),
+        ),
+      ),
+    );
     navigator.pushAndRemoveUntil(
       MaterialPageRoute(
         builder: (context) => LoginScreen(
@@ -227,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
               deviceName: deviceName,
               onRename: _handleRename,
               onLocaleChange: widget.onLocaleChange,
-              onReset: _handleReset,
+              onLogout: _handleLogout,
               apiService: _apiService,
             ),
           ),

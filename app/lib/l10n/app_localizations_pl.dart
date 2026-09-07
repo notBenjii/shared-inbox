@@ -40,7 +40,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get save => 'Zapisz';
 
   @override
-  String get resetSetup => 'Zresetuj konfigurację';
+  String get logout => 'Wyloguj się';
 
   @override
   String get failedToLoad =>
@@ -51,7 +51,7 @@ class AppLocalizationsPl extends AppLocalizations {
       'Nie udało się wysłać elementu. Sprawdź połączenie.';
 
   @override
-  String get resetSetupSuccess => 'Konfiguracja została pomyślnie zresetowana.';
+  String get logoutSuccess => 'Pomyślnie wylogowano.';
 
   @override
   String get justNow => 'teraz';
@@ -207,4 +207,16 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get genericError => 'Coś poszło nie tak. Spróbuj ponownie.';
+
+  @override
+  String get invalidCredentialsError => 'Nieprawidłowy email lub hasło.';
+
+  @override
+  String get rateLimitedGeneric =>
+      'Zbyt wiele żądań. Spróbuj ponownie później.';
+
+  @override
+  String rateLimitedWithTime(int seconds) {
+    return 'Zbyt wiele prób. Spróbuj ponownie za ${seconds}s.';
+  }
 }

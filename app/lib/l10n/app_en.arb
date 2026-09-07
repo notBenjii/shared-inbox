@@ -14,10 +14,10 @@
   "renameDeviceHint": "New device name",
   "cancel": "Cancel",
   "save": "Save",
-  "resetSetup": "Reset setup",
+  "logout": "Log out",
   "failedToLoad": "Failed to load items. Check your connection.",
   "failedToSend": "Failed to send item. Check your connection.",
-  "resetSetupSuccess": "Setup reset successfully.",
+  "logoutSuccess": "Logged out successfully.",
   "justNow": "just now",
   "minutesAgo": "{count}m ago",
   "@minutesAgo": {
@@ -79,5 +79,11 @@
   "backToSignIn": "Back to sign in",
   "back": "Back",
   "emailRegisteredError": "This email is already registered.",
-  "genericError": "Something went wrong. Please try again."
+  "genericError": "Something went wrong. Please try again.",
+  "invalidCredentialsError": "Invalid email or password.",
+  "rateLimitedGeneric": "Too many requests. Please try again later.",
+  "rateLimitedWithTime": "Too many attempts. Please try again in {seconds}s.",
+  "@rateLimitedWithTime": {
+    "placeholders": { "seconds": { "type": "int" } }
+  }
 }

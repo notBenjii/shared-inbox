@@ -152,11 +152,11 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
-  /// No description provided for @resetSetup.
+  /// No description provided for @logout.
   ///
   /// In en, this message translates to:
-  /// **'Reset setup'**
-  String get resetSetup;
+  /// **'Log out'**
+  String get logout;
 
   /// No description provided for @failedToLoad.
   ///
@@ -170,11 +170,11 @@ abstract class AppLocalizations {
   /// **'Failed to send item. Check your connection.'**
   String get failedToSend;
 
-  /// No description provided for @resetSetupSuccess.
+  /// No description provided for @logoutSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Setup reset successfully.'**
-  String get resetSetupSuccess;
+  /// **'Logged out successfully.'**
+  String get logoutSuccess;
 
   /// No description provided for @justNow.
   ///
@@ -463,6 +463,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong. Please try again.'**
   String get genericError;
+
+  /// No description provided for @invalidCredentialsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password.'**
+  String get invalidCredentialsError;
+
+  /// No description provided for @rateLimitedGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please try again later.'**
+  String get rateLimitedGeneric;
+
+  /// No description provided for @rateLimitedWithTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again in {seconds}s.'**
+  String rateLimitedWithTime(int seconds);
 }
 
 class _AppLocalizationsDelegate

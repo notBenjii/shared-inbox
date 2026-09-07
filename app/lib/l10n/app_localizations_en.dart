@@ -40,7 +40,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
-  String get resetSetup => 'Reset setup';
+  String get logout => 'Log out';
 
   @override
   String get failedToLoad => 'Failed to load items. Check your connection.';
@@ -49,7 +49,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToSend => 'Failed to send item. Check your connection.';
 
   @override
-  String get resetSetupSuccess => 'Setup reset successfully.';
+  String get logoutSuccess => 'Logged out successfully.';
 
   @override
   String get justNow => 'just now';
@@ -205,4 +205,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genericError => 'Something went wrong. Please try again.';
+
+  @override
+  String get invalidCredentialsError => 'Invalid email or password.';
+
+  @override
+  String get rateLimitedGeneric => 'Too many requests. Please try again later.';
+
+  @override
+  String rateLimitedWithTime(int seconds) {
+    return 'Too many attempts. Please try again in ${seconds}s.';
+  }
 }

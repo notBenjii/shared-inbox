@@ -14,10 +14,10 @@
   "renameDeviceHint": "Nowa nazwa urządzenia",
   "cancel": "Anuluj",
   "save": "Zapisz",
-  "resetSetup": "Zresetuj konfigurację",
+  "logout": "Wyloguj się",
   "failedToLoad": "Nie udało się wczytać elementów. Sprawdź połączenie.",
   "failedToSend": "Nie udało się wysłać elementu. Sprawdź połączenie.",
-  "resetSetupSuccess": "Konfiguracja została pomyślnie zresetowana.",
+  "logoutSuccess": "Pomyślnie wylogowano.",
   "justNow": "teraz",
   "minutesAgo": "{count}m temu",
   "@minutesAgo": {
@@ -79,5 +79,11 @@
   "backToSignIn": "Powrót do logowania",
   "back": "Wstecz",
   "emailRegisteredError": "Ten adres email jest już zarejestrowany.",
-  "genericError": "Coś poszło nie tak. Spróbuj ponownie."
+  "genericError": "Coś poszło nie tak. Spróbuj ponownie.",
+  "invalidCredentialsError": "Nieprawidłowy email lub hasło.",
+  "rateLimitedGeneric": "Zbyt wiele żądań. Spróbuj ponownie później.",
+  "rateLimitedWithTime": "Zbyt wiele prób. Spróbuj ponownie za {seconds}s.",
+  "@rateLimitedWithTime": {
+    "placeholders": { "seconds": { "type": "int" } }
+  }
 }

@@ -40,6 +40,16 @@ class ApiService {
     }
   }
 
+  Future<void> logout() async {
+    final response = await http.delete(
+      Uri.parse('$serverUrl/logout'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode != 204) {
+      throw Exception('Failed to logout (status ${response.statusCode})');
+    }
+  }
+
   Future<void> deleteItem(int itemId) async {
     final response = await http.delete(
       Uri.parse('$serverUrl/items/$itemId'),
@@ -106,7 +116,15 @@ class AuthApiService {
       final data = jsonDecode(response.body);
       return data['token'] as String;
     } else {
-      throw Exception('Failed to login (status ${response.statusCode})');
+      final retryAfterHeader = response.headers['retry-after'];
+      final retryAfter = retryAfterHeader != null
+          ? int.tryParse(retryAfterHeader)
+          : null;
+      throw ApiException(
+        response.statusCode,
+        'Failed to login',
+        retryAfterSeconds: retryAfter,
+      );
     }
   }
 
@@ -121,7 +139,7 @@ class AuthApiService {
       final data = jsonDecode(response.body);
       return data['salt'] as String;
     } else {
-      throw Exception('Failed to fetch salt (status ${response.statusCode})');
+      throw ApiException(response.statusCode, 'Failed to fetch salt');
     }
   }
 
