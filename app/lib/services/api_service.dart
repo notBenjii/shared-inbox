@@ -22,7 +22,7 @@ class ApiService {
       final List<dynamic> data = json.decode(response.body);
       return data.cast<Map<String, dynamic>>();
     } else {
-      throw Exception('Failed to load items (status ${response.statusCode})');
+      throw ApiException(response.statusCode, 'Failed to fetch items');
     }
   }
 
@@ -36,7 +36,7 @@ class ApiService {
       body: jsonEncode({'content': content, 'device_name': deviceName}),
     );
     if (response.statusCode != 201) {
-      throw Exception('Failed to send item (status ${response.statusCode})');
+      throw ApiException(response.statusCode, 'Failed to send item');
     }
   }
 
@@ -46,7 +46,7 @@ class ApiService {
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode != 204) {
-      throw Exception('Failed to logout (status ${response.statusCode})');
+      throw ApiException(response.statusCode, 'Failed to logout');
     }
   }
 
@@ -59,7 +59,7 @@ class ApiService {
       },
     );
     if (response.statusCode != 204) {
-      throw Exception('Failed to delete item (status ${response.statusCode})');
+      throw ApiException(response.statusCode, 'Failed to delete item');
     }
   }
 
@@ -72,9 +72,7 @@ class ApiService {
       final data = jsonDecode(response.body);
       return data['code'] as String;
     } else {
-      throw Exception(
-        'Failed to create pairing code (status ${response.statusCode})',
-      );
+      throw ApiException(response.statusCode, 'Failed to create pairing code');
     }
   }
 }
@@ -157,7 +155,7 @@ class AuthApiService {
         'server_url': data['server_url'] as String,
       };
     } else {
-      throw Exception('Failed to redeem code (status ${response.statusCode})');
+      throw ApiException(response.statusCode, 'Failed to redeem code');
     }
   }
 }

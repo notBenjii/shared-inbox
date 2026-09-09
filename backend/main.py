@@ -162,11 +162,28 @@ def init_db():
                 ON DELETE CASCADE
         )
     """)
+    cursor.execute("ALTER TABLE items ENABLE ROW LEVEL SECURITY")
+    cursor.execute("ALTER TABLE items FORCE ROW LEVEL SECURITY")
+    cursor.execute("DROP POLICY IF EXISTS items_account_isolation ON items")
+    cursor.execute("""
+        CREATE POLICY items_account_isolation ON items
+        USING (account_id = current_setting('app.current_account_id')::int)
+    """)
     conn.commit()
     cursor.close()
     conn.close()
 
 init_db()
+
+def get_account_scoped_connection(account_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT set_config('app.current_account_id', %s, false)",
+        (str(account_id),),
+    )
+    cursor.close()
+    return conn
 
 def create_session(account_id: int) -> str:
     token = secrets_module.token_urlsafe(32)
@@ -203,7 +220,7 @@ def health_check():
 def create_item(new_item: NewItem, session: dict = Depends(require_account)):
     account_id = session["account_id"]
     created_at = datetime.now(timezone.utc).isoformat()
-    conn = get_connection()
+    conn = get_account_scoped_connection(account_id)
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO items (account_id, content, device_name, created_at) VALUES (%s, %s, %s, %s) RETURNING item_id",
@@ -219,7 +236,7 @@ def create_item(new_item: NewItem, session: dict = Depends(require_account)):
 @app.get("/items")
 def list_items(session: dict = Depends(require_account)):
     account_id = session["account_id"]
-    conn = get_connection()
+    conn = get_account_scoped_connection(account_id)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM items WHERE account_id = %s ORDER BY item_id DESC", (account_id,))
     rows = cursor.fetchall()
@@ -230,7 +247,7 @@ def list_items(session: dict = Depends(require_account)):
 @app.delete("/items/{item_id}", status_code=204)
 def delete_item(item_id: int, session: dict = Depends(require_account)):
     account_id = session["account_id"]
-    conn = get_connection()
+    conn = get_account_scoped_connection(account_id)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM items WHERE item_id = %s AND account_id = %s", (item_id, account_id))
     conn.commit()
