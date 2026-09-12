@@ -114,67 +114,6 @@ def get_connection():
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
-def init_db():
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS accounts (
-	        account_id SERIAL PRIMARY KEY,
-	        email TEXT NOT NULL UNIQUE,
-	        auth_verifier_hash TEXT NOT NULL,
-	        salt TEXT NOT NULL,
-	        created_at TEXT NOT NULL
-        )
-    """)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS items (
-            item_id SERIAL PRIMARY KEY,
-            account_id INT NOT NULL,
-            content TEXT NOT NULL,
-            device_name TEXT NOT NULL,
-            created_at TEXT NOT NULL,
-            CONSTRAINT fk_account_id
-                FOREIGN KEY(account_id)
-                REFERENCES accounts(account_id)
-                ON DELETE CASCADE
-        )
-    """)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS sessions (
-            token TEXT PRIMARY KEY,
-            account_id INT NOT NULL,
-            created_at TEXT NOT NULL,
-            CONSTRAINT fk_account_id
-                FOREIGN KEY(account_id)
-                REFERENCES accounts(account_id)
-                ON DELETE CASCADE
-        )
-    """)
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS pairing_codes (
-            code TEXT PRIMARY KEY,
-            account_id INT NOT NULL,
-            created_at TEXT NOT NULL,
-            used BOOLEAN NOT NULL DEFAULT FALSE,
-            CONSTRAINT fk_account_id
-                FOREIGN KEY(account_id)
-                REFERENCES accounts(account_id)
-                ON DELETE CASCADE
-        )
-    """)
-    cursor.execute("ALTER TABLE items ENABLE ROW LEVEL SECURITY")
-    cursor.execute("ALTER TABLE items FORCE ROW LEVEL SECURITY")
-    cursor.execute("DROP POLICY IF EXISTS items_account_isolation ON items")
-    cursor.execute("""
-        CREATE POLICY items_account_isolation ON items
-        USING (account_id = current_setting('app.current_account_id')::int)
-    """)
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-init_db()
-
 def get_account_scoped_connection(account_id: int):
     conn = get_connection()
     cursor = conn.cursor()
