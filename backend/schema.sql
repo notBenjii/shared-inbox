@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     email TEXT NOT NULL UNIQUE,
     auth_verifier_hash TEXT NOT NULL,
     salt TEXT NOT NULL,
+    username TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
 

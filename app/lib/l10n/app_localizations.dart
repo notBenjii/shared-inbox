@@ -320,17 +320,17 @@ abstract class AppLocalizations {
   /// **'PASSWORD'**
   String get passwordLabel;
 
-  /// No description provided for @nicknameLabel.
+  /// No description provided for @usernameLabel.
   ///
   /// In en, this message translates to:
-  /// **'NICKNAME'**
-  String get nicknameLabel;
+  /// **'USERNAME'**
+  String get usernameLabel;
 
-  /// No description provided for @nicknameHint.
+  /// No description provided for @usernameHint.
   ///
   /// In en, this message translates to:
-  /// **'yourname'**
-  String get nicknameHint;
+  /// **'Username'**
+  String get usernameHint;
 
   /// No description provided for @passwordHintCreate.
   ///
@@ -386,6 +386,12 @@ abstract class AppLocalizations {
   /// **'Password is required.'**
   String get passwordRequiredError;
 
+  /// No description provided for @usernameRequiredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required.'**
+  String get usernameRequiredError;
+
   /// No description provided for @invalidEmailError.
   ///
   /// In en, this message translates to:
@@ -397,6 +403,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must be at least 8 characters.'**
   String get passwordTooShortError;
+
+  /// No description provided for @usernameTooLongError.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at most 24 characters.'**
+  String get usernameTooLongError;
 
   /// No description provided for @verifyEmailTitle.
   ///
@@ -481,6 +493,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Too many attempts. Please try again in {seconds}s.'**
   String rateLimitedWithTime(int seconds);
+
+  /// No description provided for @editUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit username'**
+  String get editUsername;
+
+  /// No description provided for @editUsernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new username'**
+  String get editUsernameHint;
+
+  /// No description provided for @failedToUpdateUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update username. Check your connection.'**
+  String get failedToUpdateUsername;
 }
 
 class _AppLocalizationsDelegate

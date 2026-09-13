@@ -134,10 +134,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get passwordLabel => 'HASŁO';
 
   @override
-  String get nicknameLabel => 'NAZWA';
+  String get usernameLabel => 'NAZWA';
 
   @override
-  String get nicknameHint => 'twojanazwa';
+  String get usernameHint => 'Nazwa użytkownika';
 
   @override
   String get passwordHintCreate => 'Min. 8 znaków';
@@ -167,10 +167,17 @@ class AppLocalizationsPl extends AppLocalizations {
   String get passwordRequiredError => 'Hasło jest wymagane.';
 
   @override
+  String get usernameRequiredError => 'Nazwa użytkownika jest wymagana.';
+
+  @override
   String get invalidEmailError => 'Wprowadź poprawny adres email.';
 
   @override
   String get passwordTooShortError => 'Hasło musi mieć co najmniej 8 znaków.';
+
+  @override
+  String get usernameTooLongError =>
+      'Nazwa użytkownika może mieć maksymalnie 24 znaki.';
 
   @override
   String get verifyEmailTitle => 'Zweryfikuj swój email';
@@ -219,4 +226,14 @@ class AppLocalizationsPl extends AppLocalizations {
   String rateLimitedWithTime(int seconds) {
     return 'Zbyt wiele prób. Spróbuj ponownie za ${seconds}s.';
   }
+
+  @override
+  String get editUsername => 'Edytuj nazwę użytkownika';
+
+  @override
+  String get editUsernameHint => 'Wprowadź nową nazwę użytkownika';
+
+  @override
+  String get failedToUpdateUsername =>
+      'Nie udało się zaktualizować nazwy użytkownika. Sprawdź połączenie.';
 }

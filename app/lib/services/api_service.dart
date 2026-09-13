@@ -63,6 +63,20 @@ class ApiService {
     }
   }
 
+  Future<void> updateUsername(String username) async {
+    final response = await http.patch(
+      Uri.parse('$serverUrl/accounts/username'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'username': username}),
+    );
+    if (response.statusCode != 204) {
+      throw ApiException(response.statusCode, 'Failed to update username');
+    }
+  }
+
   Future<String> createPairingCode() async {
     final response = await http.post(
       Uri.parse('$serverUrl/pairing-codes'),
@@ -86,6 +100,7 @@ class AuthApiService {
     String email,
     String authVerifier,
     String salt,
+    String username,
   ) async {
     final response = await http.post(
       Uri.parse('$serverUrl/accounts'),
@@ -94,6 +109,7 @@ class AuthApiService {
         'email': email,
         'auth_verifier': authVerifier,
         'salt': salt,
+        'username': username,
       }),
     );
     if (response.statusCode == 201) {

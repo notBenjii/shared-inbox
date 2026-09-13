@@ -7,13 +7,17 @@ class StorageService {
       _storage.write(key: 'token', value: token);
   Future<String?> getToken() => _storage.read(key: 'token');
 
-    Future<void> saveEmail(String email) =>
+  Future<void> saveEmail(String email) =>
       _storage.write(key: 'email', value: email);
   Future<String?> getEmail() => _storage.read(key: 'email');
 
   Future<void> saveDeviceName(String deviceName) =>
       _storage.write(key: 'device_name', value: deviceName);
   Future<String?> getDeviceName() => _storage.read(key: 'device_name');
+
+  Future<void> saveUsername(String username) =>
+      _storage.write(key: 'username', value: username);
+  Future<String?> getUsername() => _storage.read(key: 'username');
 
   Future<void> saveLanguage(String? languageCode) => languageCode == null
       ? _storage.delete(key: 'language')

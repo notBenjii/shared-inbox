@@ -10,6 +10,8 @@ import '../services/api_service.dart';
 class DevicePopupMenu extends StatelessWidget {
   const DevicePopupMenu({
     super.key,
+    required this.username,
+    required this.onUsernameChange,
     required this.deviceName,
     required this.onRename,
     required this.onLocaleChange,
@@ -17,7 +19,9 @@ class DevicePopupMenu extends StatelessWidget {
     required this.apiService,
   });
 
+  final String username;
   final String deviceName;
+  final ValueChanged<String> onUsernameChange;
   final ValueChanged<String> onRename;
   final ValueChanged<Locale?> onLocaleChange;
   final VoidCallback onLogout;
@@ -118,6 +122,67 @@ class DevicePopupMenu extends StatelessWidget {
     );
   }
 
+  Future<void> _showEditUsernameDialog(
+    BuildContext context,
+    ApiService apiService,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: username);
+    String? error;
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: AppColors.surface,
+            title: Text(
+              l10n.editUsername,
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              style: const TextStyle(color: AppColors.textPrimary),
+              decoration: InputDecoration(
+                hintText: l10n.editUsernameHint,
+                hintStyle: const TextStyle(color: AppColors.textSecondary),
+                errorText: error,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final newUsername = controller.text.trim();
+                  if (newUsername.isEmpty) {
+                    setDialogState(() => error = l10n.usernameRequiredError);
+                    return;
+                  } else if (newUsername.length > 24) {
+                    setDialogState(() => error = l10n.usernameTooLongError);
+                    return;
+                  }
+                  try {
+                    await apiService.updateUsername(newUsername);
+                    onUsernameChange(newUsername);
+                    if (!context.mounted) return;
+                    Navigator.pop(context);
+                  } catch (e) {
+                    setDialogState(() => error = l10n.failedToUpdateUsername);
+                  }
+                },
+                child: Text(l10n.save),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _showQrDialog(
     BuildContext context,
     ApiService apiService,
@@ -167,6 +232,8 @@ class DevicePopupMenu extends StatelessWidget {
       onSelected: (value) {
         if (value == 'rename') {
           _showRenameDialog(context);
+        } else if (value == 'username' && apiService != null) {
+          _showEditUsernameDialog(context, apiService!);
         } else if (value == 'qr' && apiService != null) {
           _showQrDialog(context, apiService!);
         } else if (value == 'language') {
@@ -177,6 +244,7 @@ class DevicePopupMenu extends StatelessWidget {
       },
       itemBuilder: (context) => [
         PopupMenuItem(value: 'rename', child: Text(l10n.renameDeviceTitle)),
+        PopupMenuItem(value: 'username', child: Text(l10n.editUsername)),
         PopupMenuItem(value: 'language', child: Text(l10n.chooseLanguage)),
         if (apiService != null)
           PopupMenuItem(value: 'qr', child: Text(l10n.showQrCode)),
@@ -192,7 +260,7 @@ class DevicePopupMenu extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            deviceName,
+            username,
             style: const TextStyle(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.bold,

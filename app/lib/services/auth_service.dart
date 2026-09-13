@@ -30,7 +30,7 @@ class AuthService {
 
   AuthService(this._authApiService);
 
-  Future<void> register(String email, String password) async {
+  Future<void> register(String email, String password, String username) async {
     final random = Random.secure();
     final saltBytes = List<int>.generate(32, (_) => random.nextInt(256));
     final salt = _bytesToHex(saltBytes);
@@ -41,10 +41,11 @@ class AuthService {
     );
     final authVerifier = _bytesToHex(await derivedKey.extractBytes());
 
-    final token = await _authApiService.register(email, authVerifier, salt);
+    final token = await _authApiService.register(email, authVerifier, salt, username);
 
     await _storageService.saveToken(token);
     await _storageService.saveEmail(email);
+    await _storageService.saveUsername(username);
   }
 
   Future<void> login(String email, String password) async {

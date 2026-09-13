@@ -25,10 +25,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // Visual only for now — not sent to the backend yet.
-  // Nickname support needs a DB column + API changes before this
-  // does anything real.
-  final _nicknameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _storageService = StorageService();
@@ -37,11 +34,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isSubmitting = false;
   String? _emailError;
   String? _passwordError;
+  String? _usernameError;
 
   bool _validate() {
     final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final username = _usernameController.text.trim();
     bool ok = true;
 
     setState(() {
@@ -61,6 +60,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ok = false;
       } else {
         _passwordError = null;
+      }
+
+      if (username.isEmpty) {
+        _usernameError = l10n.usernameRequiredError;
+        ok = false;
+      } else if (username.length > 24) {
+        _usernameError = l10n.usernameTooLongError;
+        ok = false;
+      } else {
+        _usernameError = null;
       }
     });
 
@@ -89,6 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await widget.authService.register(
         _emailController.text.trim(),
         _passwordController.text,
+        _usernameController.text.trim()
       );
       await _storageService.saveDeviceName(deviceName);
       if (!mounted) return;
@@ -133,7 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
-    _nicknameController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -188,13 +198,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildLabel(l10n.nicknameLabel),
+                    _buildLabel(l10n.usernameLabel),
                     const SizedBox(height: 6),
                     TextField(
-                      controller: _nicknameController,
+                      controller: _usernameController,
                       style: const TextStyle(color: AppColors.textPrimary),
                       decoration: InputDecoration(
-                        hintText: l10n.nicknameHint,
+                        hintText: l10n.usernameHint,
                         hintStyle: const TextStyle(
                           color: AppColors.textSecondary,
                         ),
@@ -203,6 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           size: 16,
                           color: AppColors.textSecondary,
                         ),
+                        errorText: _usernameError,
                         filled: true,
                         fillColor: AppColors.surfaceVariant,
                         border: OutlineInputBorder(

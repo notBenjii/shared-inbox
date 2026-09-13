@@ -53,8 +53,8 @@
   "createAccountSubtitle": "Utwórz swoje konto",
   "emailLabel": "EMAIL",
   "passwordLabel": "HASŁO",
-  "nicknameLabel": "NAZWA",
-  "nicknameHint": "twojanazwa",
+  "usernameLabel": "NAZWA",
+  "usernameHint": "Nazwa użytkownika",
   "passwordHintCreate": "Min. 8 znaków",
   "forgotPassword": "Nie pamiętasz hasła?",
   "signIn": "Zaloguj się",
@@ -64,8 +64,10 @@
   "createOne": "Utwórz je",
   "emailRequiredError": "Email jest wymagany.",
   "passwordRequiredError": "Hasło jest wymagane.",
+  "usernameRequiredError": "Nazwa użytkownika jest wymagana.",
   "invalidEmailError": "Wprowadź poprawny adres email.",
   "passwordTooShortError": "Hasło musi mieć co najmniej 8 znaków.",
+  "usernameTooLongError": "Nazwa użytkownika może mieć maksymalnie 24 znaki.",
   "verifyEmailTitle": "Zweryfikuj swój email",
   "verifyEmailSubtitle": "Wysłaliśmy 6-cyfrowy kod na",
   "verifyEmail": "Zweryfikuj email",
@@ -85,5 +87,8 @@
   "rateLimitedWithTime": "Zbyt wiele prób. Spróbuj ponownie za {seconds}s.",
   "@rateLimitedWithTime": {
     "placeholders": { "seconds": { "type": "int" } }
-  }
+  },
+  "editUsername": "Edytuj nazwę użytkownika",
+  "editUsernameHint": "Wprowadź nową nazwę użytkownika",
+  "failedToUpdateUsername": "Nie udało się zaktualizować nazwy użytkownika. Sprawdź połączenie."
 }

@@ -8,7 +8,7 @@ import hmac
 from argon2.exceptions import VerifyMismatchError
 from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, Header, HTTPException, Depends, Request
-from pydantic import BaseModel, EmailStr, AfterValidator
+from pydantic import BaseModel, EmailStr, AfterValidator, Field
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 import secrets as secrets_module
@@ -42,6 +42,10 @@ class RegisterCredentials(BaseModel):
     email: Annotated[EmailStr, AfterValidator(normalize_email)]
     auth_verifier: str
     salt: str
+    username: Annotated[str, Field(min_length=1, max_length=24), AfterValidator(str.strip)]
+
+class UsernameUpdate(BaseModel):
+    username: Annotated[str, Field(min_length=1, max_length=24), AfterValidator(str.strip)]
 
 app = FastAPI()
 
@@ -207,8 +211,8 @@ def register(creds: RegisterCredentials, request: Request):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO accounts (email, auth_verifier_hash, salt, created_at) VALUES (%s, %s, %s, %s) RETURNING account_id",
-                       (creds.email, auth_verifier_hash, creds.salt, created_at),
+        cursor.execute("INSERT INTO accounts (email, auth_verifier_hash, salt, username, created_at) VALUES (%s, %s, %s, %s, %s) RETURNING account_id",
+                       (creds.email, auth_verifier_hash, creds.salt, creds.username, created_at),
         )
         result = cursor.fetchone()
         account_id = result["account_id"]  # type: ignore
@@ -222,6 +226,19 @@ def register(creds: RegisterCredentials, request: Request):
 
     token = create_session(account_id)
     return {"token": token}
+
+@app.patch("/accounts/username", status_code=204)
+def update_username(update: UsernameUpdate, session: dict = Depends(require_account)):
+    account_id = session["account_id"]
+    conn = get_account_scoped_connection(account_id)
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE accounts SET username = %s WHERE account_id = %s",
+        (update.username, account_id),
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 @app.post("/sessions")
 def login(creds: Credentials, request: Request):

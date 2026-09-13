@@ -33,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? _token;
   String? _deviceName;
+  String? _username;
   final String _serverUrl = AppConfig.serverUrl;
   bool _isSending = false;
   bool _isLoading = false;
@@ -61,11 +62,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadCredentials() async {
     final storageService = StorageService();
     final token = await storageService.getToken();
+    final username = await storageService.getUsername();
     final deviceName = await storageService.getDeviceName();
 
     setState(() {
       _token = token;
       _deviceName = deviceName;
+      _username = username;
     });
 
     _apiService = ApiService(serverUrl: _serverUrl, token: _token!);
@@ -137,6 +140,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void _handleRename(String newName) {
     setState(() => _deviceName = newName);
     StorageService().saveDeviceName(newName);
+  }
+
+  void _handleUsernameChange(String newUsername) {
+    setState(() => _username = newUsername);
+    StorageService().saveUsername(newUsername);
   }
 
   Future<void> _handleLogout() async {
@@ -233,6 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: DevicePopupMenu(
+              username: _username ?? '',
+              onUsernameChange: _handleUsernameChange,
               deviceName: deviceName,
               onRename: _handleRename,
               onLocaleChange: widget.onLocaleChange,

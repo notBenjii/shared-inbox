@@ -53,8 +53,8 @@
   "createAccountSubtitle": "Create your account",
   "emailLabel": "EMAIL",
   "passwordLabel": "PASSWORD",
-  "nicknameLabel": "NICKNAME",
-  "nicknameHint": "yourname",
+  "usernameLabel": "USERNAME",
+  "usernameHint": "Username",
   "passwordHintCreate": "Min. 8 characters",
   "forgotPassword": "Forgot password?",
   "signIn": "Sign in",
@@ -64,8 +64,10 @@
   "createOne": "Create one",
   "emailRequiredError": "Email is required.",
   "passwordRequiredError": "Password is required.",
+  "usernameRequiredError": "Username is required.",
   "invalidEmailError": "Enter a valid email address.",
   "passwordTooShortError": "Password must be at least 8 characters.",
+  "usernameTooLongError": "Username must be at most 24 characters.",
   "verifyEmailTitle": "Verify your email",
   "verifyEmailSubtitle": "We sent a 6-digit code to",
   "verifyEmail": "Verify email",
@@ -85,5 +87,9 @@
   "rateLimitedWithTime": "Too many attempts. Please try again in {seconds}s.",
   "@rateLimitedWithTime": {
     "placeholders": { "seconds": { "type": "int" } }
-  }
+  },
+  "editUsername": "Edit username",
+  "editUsernameHint": "Enter a new username",
+  "failedToUpdateUsername": "Failed to update username. Check your connection."
+
 }
