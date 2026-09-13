@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'api_exception.dart';
+import 'auth_result.dart';
 
 class ApiService {
   final String serverUrl;
@@ -41,7 +42,7 @@ class ApiService {
   }
 
   Future<void> logout() async {
-    final response = await http.delete(
+    final response = await http.post(
       Uri.parse('$serverUrl/logout'),
       headers: {'Authorization': 'Bearer $token'},
     );
@@ -96,7 +97,7 @@ class AuthApiService {
 
   AuthApiService({required this.serverUrl});
 
-  Future<String> register(
+  Future<AuthResult> register(
     String email,
     String authVerifier,
     String salt,
@@ -113,22 +114,20 @@ class AuthApiService {
       }),
     );
     if (response.statusCode == 201) {
-      final data = jsonDecode(response.body);
-      return data['token'] as String;
+      return AuthResult.fromJson(jsonDecode(response.body));
     } else {
       throw ApiException(response.statusCode, 'Failed to register');
     }
   }
 
-  Future<String> login(String email, String authVerifier) async {
+  Future<AuthResult> login(String email, String authVerifier) async {
     final response = await http.post(
       Uri.parse('$serverUrl/sessions'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'auth_verifier': authVerifier}),
     );
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['token'] as String;
+      return AuthResult.fromJson(jsonDecode(response.body));
     } else {
       final retryAfterHeader = response.headers['retry-after'];
       final retryAfter = retryAfterHeader != null

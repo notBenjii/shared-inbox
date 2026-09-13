@@ -171,7 +171,15 @@ class DevicePopupMenu extends StatelessWidget {
                     if (!context.mounted) return;
                     Navigator.pop(context);
                   } catch (e) {
-                    setDialogState(() => error = l10n.failedToUpdateUsername);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: AppColors.surface,
+                        content: Text(
+                          l10n.failedToUpdateUsername,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                        ),
+                      ),
+                    );
                   }
                 },
                 child: Text(l10n.save),

@@ -41,11 +41,11 @@ class AuthService {
     );
     final authVerifier = _bytesToHex(await derivedKey.extractBytes());
 
-    final token = await _authApiService.register(email, authVerifier, salt, username);
+    final result = await _authApiService.register(email, authVerifier, salt, username);
 
-    await _storageService.saveToken(token);
+    await _storageService.saveToken(result.token);
     await _storageService.saveEmail(email);
-    await _storageService.saveUsername(username);
+    await _storageService.saveUsername(result.username);
   }
 
   Future<void> login(String email, String password) async {
@@ -58,9 +58,10 @@ class AuthService {
     );
     final authVerifier = _bytesToHex(await derivedKey.extractBytes());
 
-    final token = await _authApiService.login(email, authVerifier);
+    final result = await _authApiService.login(email, authVerifier);
 
-    await _storageService.saveToken(token);
+    await _storageService.saveToken(result.token);
     await _storageService.saveEmail(email);
+    await _storageService.saveUsername(result.username);
   }
 }

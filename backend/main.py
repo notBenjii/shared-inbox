@@ -225,7 +225,7 @@ def register(creds: RegisterCredentials, request: Request):
         raise HTTPException(status_code=409, detail="Email already registered")
 
     token = create_session(account_id)
-    return {"token": token}
+    return {"token": token, "username": creds.username}
 
 @app.patch("/accounts/username", status_code=204)
 def update_username(update: UsernameUpdate, session: dict = Depends(require_account)):
@@ -248,7 +248,7 @@ def login(creds: Credentials, request: Request):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT account_id, email, auth_verifier_hash FROM accounts WHERE email = %s",
+        "SELECT account_id, email, auth_verifier_hash, username FROM accounts WHERE email = %s",
         (creds.email,),
     )
     row = cursor.fetchone()
@@ -285,8 +285,9 @@ def login(creds: Credentials, request: Request):
         conn.close()
 
     token = create_session(account_id)
+    username = row["username"] # type: ignore
 
-    return {"token": token}
+    return {"token": token, "username": username}
 
 @app.get("/accounts/salt")
 def get_salt(email: EmailStr):
